@@ -1,6 +1,5 @@
 import {LitElement, html, css} from 'https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js';
 import './components/widget-block.js';
-import './components/blog-block.js';
 import './components/widget-column.js';
 import './components/ad-widget.js';
 import './components/login-widget.js';
