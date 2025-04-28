@@ -60,7 +60,6 @@ class Comp2110Dashboard extends LitElement {
         </widget-column>  
         <widget-column header="Right">
           <ad-widget></ad-widget>
-         
         </widget-column>
       </main>
 
