@@ -15,7 +15,7 @@ class LoginWidget extends LitElement {
 
   constructor() {
     super();
-    this.loginUrl = `${BASE_URL}users/login`;
+    this.loginUrl = `${BASE_URL}/users/login`;
     this.user = getUser();
   }
 
