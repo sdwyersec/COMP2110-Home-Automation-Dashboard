@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js';
-;
+
 
 export class HomeOverviewWidget extends LitElement {
   static styles = css`
@@ -47,12 +47,12 @@ export class HomeOverviewWidget extends LitElement {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         }),
-        fetch('https://comp2110-portal-server.fly.dev/devices', {
+        fetch('https://comp2110-portal-server.fly.dev/home/devices', {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         }),
-        fetch('https://comp2110-portal-server.fly.dev/sensors', {
+        fetch('https://comp2110-portal-server.fly.dev/home/sensors', {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
