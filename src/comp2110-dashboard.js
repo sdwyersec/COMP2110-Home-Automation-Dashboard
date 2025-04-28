@@ -51,23 +51,16 @@ class Comp2110Dashboard extends LitElement {
 
       <main>
         <widget-column header="Left">
-          <widget-block header="First Widget"></widget-block>
-          <widget-block header="Second Widget"></widget-block>
-          <widget-block header="Third Widget"></widget-block>
           <device-sensor-control-widget></device-sensor-control-widget>
 
         </widget-column>  
         <widget-column header="Middle">
-          <widget-block header="First Widget"></widget-block>
-          <widget-block header="Second Widget"></widget-block>
-          <widget-block header="Third Widget"></widget-block>
-           <home-overview-widget></home-overview-widget>
-           
+           <home-overview-widget></home-overview-widget>         
+
         </widget-column>  
         <widget-column header="Right">
           <ad-widget></ad-widget>
-          <widget-block header="Fourth Widget"></widget-block>
-          <widget-block header="Fifth Widget"></widget-block>
+         
         </widget-column>
       </main>
 
