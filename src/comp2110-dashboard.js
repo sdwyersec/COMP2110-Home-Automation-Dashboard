@@ -49,17 +49,34 @@ class Comp2110Dashboard extends LitElement {
         <h1>${this.header}</h1>
         <login-widget></login-widget>
       </header>
-
+  
+      <!-- First Row -->
       <main>
         <widget-column header="Left">
           <device-sensor-control-widget></device-sensor-control-widget>
         </widget-column>  
+  
         <widget-column header="Middle">
-           <shopping-list-widget></shopping-list-widget>        
-
+          <shopping-list-widget></shopping-list-widget>
         </widget-column>  
+  
         <widget-column header="Right">
           <ad-widget></ad-widget>
+        </widget-column>
+      </main>
+  
+      <!-- Second Row -->
+      <main>
+        <widget-column header="Left">
+          <home-overview-widget></home-overview-widget>
+        </widget-column>  
+  
+        <widget-column header="Middle">
+          <!-- widget -->
+        </widget-column>  
+  
+        <widget-column header="Right">
+          <!-- widget -->
         </widget-column>
       </main>
 
