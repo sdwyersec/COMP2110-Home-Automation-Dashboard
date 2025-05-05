@@ -4,6 +4,7 @@ import './components/widget-column.js';
 import './components/ad-widget.js';
 import './components/login-widget.js';
 import './device-sensor-control-widget.js';
+import './shopping-list-widget.js';
 import './home-overview-widget.js';
 
 
@@ -52,10 +53,9 @@ class Comp2110Dashboard extends LitElement {
       <main>
         <widget-column header="Left">
           <device-sensor-control-widget></device-sensor-control-widget>
-
         </widget-column>  
         <widget-column header="Middle">
-           <home-overview-widget></home-overview-widget>         
+           <shopping-list-widget></shopping-list-widget>        
 
         </widget-column>  
         <widget-column header="Right">
