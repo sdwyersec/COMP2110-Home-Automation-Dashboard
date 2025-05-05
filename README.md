@@ -8,7 +8,7 @@ file with some documentation on your group's implementation.
 | Name | Student ID | Contribution |
 |----------|----------|----------|
 |Simon Dwyer|48410543|Shopping list widget|
-||||
+|Kartik Malik|47963387|Weather widget|
 
 ## Features
 ### Shopping List Widget
