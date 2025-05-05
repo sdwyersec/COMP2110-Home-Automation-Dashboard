@@ -12,7 +12,7 @@ file with some documentation on your group's implementation.
 
 ## Features
 ### Shopping List Widget
-A `<shopping-list-widget>` that interacts with a shared list backend. Authenticated users can add or delete items from a designated "Shopping List". The widget fetches the list data on load, displays items, and provides real-time interaction with the server.
+A <shopping-list-widget> that lets logged-in users view, add, and delete items from a shared shopping list. The list updates automatically when the widget loads and whenever changes are made, keeping everything in sync.
 #
 
 ### 🔐 Authentication Integration
