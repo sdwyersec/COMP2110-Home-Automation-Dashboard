@@ -1,12 +1,15 @@
 // Import
 import { LitElement, html, css } from 'https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js';
+import { BASE_URL } from './config.js';
+import { getUser } from './auth.js';
 
 // Define custom element
 export class ShoppingListWidget extends LitElement {
   // Declare reactive properties
   static properties = {
-    items: { type: Array },   // List of shopping items
-    newItem: { type: String } // Input field for new item
+    items: { type: Array, state: true },  // List of shopping items
+    newItem: { type: String },  // Input field for new item
+    _hasInitialLoad: { type: Boolean, state: true } // Flag to avoid reloading on multiple connections
   };
 
   // Style
@@ -47,7 +50,7 @@ export class ShoppingListWidget extends LitElement {
       background: rgba(255, 0, 251, 0.2);
       color: white;
       backdrop-filter: blur(5px);
-      max-width: 220px; /* slightly restrict width */
+      max-width: 220px;
     }
 
     input::placeholder {
@@ -150,46 +153,91 @@ export class ShoppingListWidget extends LitElement {
     .btn-picto:hover {
       color: red;
     }
+
+    .error {
+      color: #ff6b6b;
+      text-align: center;
+      margin: 1rem 0;
+    }
   `;
-  
+
   // Initialise properties
   constructor() {
     super();
     this.items = [];  // Start with empty list
-    this.newItem = '';  // Start with empty input field
+    this.newItem = '';   // Start with empty input field
+    this._hasInitialLoad = false;
   }
 
   connectedCallback() {
     super.connectedCallback();
-    this.loadItems();
+    if (!this._hasInitialLoad) {
+      this.loadItems();
+      this._hasInitialLoad = true;
+    }
   }
 
-  // Load items from /lists API
+  // Load items from API
   async loadItems() {
     try {
-      const response = await fetch('/lists');
-      const data = await response.json();
+      const user = getUser();
+      let loadedItems = [];
 
-      // If /lists returns { lists: [...] }, access the inner array
-      this.items = Array.isArray(data) ? data : data.lists || [];
+      if (user?.token) {
+        const response = await fetch(`${BASE_URL}/lists`, {
+          headers: { 'Authorization': `Bearer ${user.token}` }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const items = Array.isArray(data.items) ? data.items : data;
+          if (Array.isArray(items)) {
+            loadedItems = items;
+          }
+        }
+      }
+
+      // Fallback to localStorage if API fetch fails
+      if (!loadedItems.length) {
+        const localItems = localStorage.getItem('shoppingList');
+        loadedItems = localItems ? JSON.parse(localItems) : [];
+      }
+
+      // Validate item & filter out invalid ones
+      const validItems = loadedItems.filter(item =>
+        item &&
+        typeof item.name === 'string' &&
+        item.name.trim().length > 0
+      );
+
+      this.items = validItems;
     } catch (error) {
-      console.error('Failed to fetch shopping list:', error);
+      console.error('Error loading items:', error);
     }
   }
 
   // Save current list to API
   async saveItems() {
     try {
-      await fetch('/lists', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(this.items)
-      });
+      localStorage.setItem('shoppingList', JSON.stringify(this.items));
+
+      const user = getUser();
+      if (user?.token) {
+        await fetch(`${BASE_URL}/lists`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${user.token}`
+          },
+          body: JSON.stringify({ items: this.items })
+        });
+      }
     } catch (error) {
-      console.error('Failed to save shopping list:', error);
+      console.error('Error saving items:', error);
     }
   }
 
+  // Handle input changes in text field
   handleInput(e) {
     this.newItem = e.target.value;
   }
@@ -197,19 +245,18 @@ export class ShoppingListWidget extends LitElement {
   // Add a new item
   async addItem(e) {
     e.preventDefault();
-    const trimmed = this.newItem.trim();
-    if (trimmed) {
-      this.items = [
-        ...this.items,
-        { name: trimmed, quantity: 1, checked: false }
-      ];
-      this.newItem = '';
-      await this.saveItems();
-    }
+    const text = this.newItem.trim();
+    if (!text) return;
+
+    const newItem = { name: text, quantity: 1, checked: false };
+    this.items = [...this.items, newItem];
+    this.newItem = '';
+    await this.saveItems();
   }
 
   // Delete item by index
-  async deleteItem(index) {
+  async deleteItem(index, e) {
+    e.stopPropagation();
     this.items = this.items.filter((_, i) => i !== index);
     await this.saveItems();
   }
@@ -223,7 +270,8 @@ export class ShoppingListWidget extends LitElement {
   }
 
   // Increase quantity
-  async increaseQuantity(index) {
+  async increaseQuantity(index, e) {
+    e.stopPropagation();
     this.items = this.items.map((item, i) =>
       i === index ? { ...item, quantity: item.quantity + 1 } : item
     );
@@ -231,7 +279,8 @@ export class ShoppingListWidget extends LitElement {
   }
 
   // Decrease quantity
-  async decreaseQuantity(index) {
+  async decreaseQuantity(index, e) {
+    e.stopPropagation();
     this.items = this.items.map((item, i) =>
       i === index && item.quantity > 1
         ? { ...item, quantity: item.quantity - 1 }
@@ -246,33 +295,34 @@ export class ShoppingListWidget extends LitElement {
       <h3>Shopping List</h3>
 
       <!-- Form for adding new items -->
-      <form @submit="${this.addItem}">
+      <form @submit=${this.addItem}>
         <input
           type="text"
           placeholder="Add item"
-          .value="${this.newItem}"
-          @input="${this.handleInput}"
+          .value=${this.newItem}
+          @input=${this.handleInput}
         />
         <button type="submit">Add</button>
       </form>
 
+
       <!-- Render the list of items -->
       <ul>
         ${this.items.map((item, index) => html`
-          <li class="${item.checked ? 'done' : ''}">
-            <span class="label" @click="${() => this.toggleChecked(index)}">
+          <li class=${item.checked ? 'done' : ''}>
+            <span class="label" @click=${() => this.toggleChecked(index)}>
               ${item.name}
             </span>
             <div class="actions">
-              <button @click="${() => this.decreaseQuantity(index)}">-</button>
+              <button @click=${(e) => this.decreaseQuantity(index, e)}>-</button>
               <span class="quantity">${item.quantity}</span>
-              <button @click="${() => this.increaseQuantity(index)}">+</button>
+              <button @click=${(e) => this.increaseQuantity(index, e)}>+</button>
               <input
                 type="checkbox"
-                .checked="${item.checked}"
-                @change="${() => this.toggleChecked(index)}"
+                .checked=${item.checked}
+                @change=${() => this.toggleChecked(index)}
               />
-              <button @click="${() => this.deleteItem(index)}" class="btn-picto">🗑️</button>
+              <button @click=${(e) => this.deleteItem(index, e)} class="btn-picto">🗑️</button>
             </div>
           </li>
         `)}
