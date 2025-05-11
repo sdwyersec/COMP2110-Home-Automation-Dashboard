@@ -3,6 +3,8 @@ import './components/widget-block.js';
 import './components/widget-column.js';
 import './components/ad-widget.js';
 import './components/login-widget.js';
+import './components/device-controller.js';
+
 
 class Comp2110Dashboard extends LitElement {
   static properties = {
@@ -46,23 +48,27 @@ class Comp2110Dashboard extends LitElement {
         <login-widget></login-widget>
       </header>
 
-      <main>
-        <widget-column header="Left">
-          <widget-block header="First Widget"></widget-block>
-          <widget-block header="Second Widget"></widget-block>
-          <widget-block header="Third Widget"></widget-block>
-        </widget-column>  
-        <widget-column header="Middle">
-          <widget-block header="First Widget"></widget-block>
-          <widget-block header="Second Widget"></widget-block>
-          <widget-block header="Third Widget"></widget-block>
-        </widget-column>  
-        <widget-column header="Right">
-          <ad-widget></ad-widget>
-          <widget-block header="Fourth Widget"></widget-block>
-          <widget-block header="Fifth Widget"></widget-block>
-        </widget-column>
-      </main>
+<main>
+  <widget-column header="Left">
+    <widget-block header="First Widget"></widget-block>
+    <widget-block header="Second Widget"></widget-block>
+    <widget-block header="Third Widget"></widget-block>
+  </widget-column>  
+
+  <widget-column header="Middle">
+    <widget-block header="First Widget"></widget-block>
+    <widget-block header="Second Widget"></widget-block>
+    <widget-block header="Third Widget"></widget-block>
+  </widget-column>  
+
+  <widget-column header="Right">
+    <ad-widget></ad-widget>
+    <device-controller deviceId="1"></device-controller>
+    <widget-block header="Fourth Widget"></widget-block>
+    <widget-block header="Fifth Widget"></widget-block>
+  </widget-column>
+</main>
+
 
       <p class="app-footer">
         A product of the COMP2110 Web Development Collective &copy; 2025
