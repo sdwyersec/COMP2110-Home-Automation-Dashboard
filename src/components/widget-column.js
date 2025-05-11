@@ -2,24 +2,31 @@ import { LitElement, html, css } from 'https://cdn.jsdelivr.net/gh/lit/dist@2/co
 
 class WidgetColumn extends LitElement {
   static properties = {
-    header: { type: String },
-  }
+    header: { type: String }
+  };
 
   static styles = css`
     :host {
+      display: block;
       margin: 10px;
+    }
+
+    .column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
     }
   `;
 
   constructor() {
     super();
-    this.header = 'Widgets';
+    this.header = '';
   }
 
   render() {
     return html`
-      <div>
-        <h2>${this.header}</h2>
+      <div class="column">
         <slot></slot>
       </div>
     `;

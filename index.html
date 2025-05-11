@@ -13,7 +13,9 @@
       margin: 0;
       padding: 0;
       font-family: sans-serif;
-      background-color: #ededed;
+      background-image: url('./assets/background-image.jpg');
+      background-size: cover;
+      background-position: center;
     }
   </style>
   <title>COMP2110 Home Automation</title>
@@ -21,6 +23,12 @@
 
 <body>
   <comp2110-dashboard></comp2110-dashboard>
+
+  <noscript>
+    <p style="text-align: center; color: red;">
+      This application requires JavaScript to run. Please enable it in your browser settings.
+    </p>
+  </noscript>
 
   <script type="module" src="./src/comp2110-dashboard.js"></script> 
 </body>

@@ -4,6 +4,19 @@ This is the starter repository for the COMP2110 Portal front end assignment 2023
 expected to customise this README file to describe your own project.  You should update this
 file with some documentation on your group's implementation.
 
+## Group Members 
+| Name | Student ID | Contribution |
+|----------|----------|----------|
+|Simon Dwyer|48410543|Shopping list widget|
+|Kartik Malik|47963387|Weather widget|
+
+## Features
+### Shopping List Widget
+A <shopping-list-widget> that lets logged-in users view, add, and delete items from a shared shopping list. The list updates automatically when the widget loads and whenever changes are made, keeping everything in sync.
+#
+
+### 🔐 Authentication Integration
+
 ## Installation
 
 The project has no external dependencies, it uses Lit via a CDN load directly into
