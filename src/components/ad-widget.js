@@ -25,7 +25,7 @@ class AdWidget extends LitElement {
 
   constructor() {
     super();
-    this.adUrl = `${BASE_URL}adserver`;
+    this.adUrl = `${BASE_URL}/adserver`;
   }
 
   render() {
