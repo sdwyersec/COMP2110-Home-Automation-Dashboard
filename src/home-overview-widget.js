@@ -3,13 +3,14 @@ import { LitElement, html, css } from 'https://cdn.jsdelivr.net/gh/lit/dist@2/co
 
 export class HomeOverviewWidget extends LitElement {
   static styles = css`
-    :host {
-      display: block;
-      padding: 1rem;
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
+      :host {
+    display: block;
+    padding: 1rem;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    color: black; /* ✅ Add this */
+  }
     .location {
       margin-bottom: 20px;
       border-bottom: 1px solid #ddd;
