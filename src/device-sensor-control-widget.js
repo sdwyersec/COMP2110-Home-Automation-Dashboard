@@ -51,8 +51,8 @@ export class DeviceSensorControlWidget extends LitElement {
     e.preventDefault();
 
     const url = this.mode === 'device'
-      ? 'https://comp2110-portal-server.fly.dev/devices/'
-      : 'https://comp2110-portal-server.fly.dev/sensors/';
+      ? 'https://comp2110-portal-server.fly.dev/devices'   // ✅ FIXED: no trailing slash
+      : 'https://comp2110-portal-server.fly.dev/sensors';  // ✅ FIXED: no trailing slash
 
     const payload = this.mode === 'device' ? {
       label: this.label,
@@ -80,17 +80,23 @@ export class DeviceSensorControlWidget extends LitElement {
         body: JSON.stringify(payload)
       });
 
-      const result = await response.json();
-
-      if (response.ok) {
-        alert('✅ Successfully created!');
-        console.log('Created:', result);
-      } else {
-        console.error('API Error Response:', result);
-        alert(`❌ Failed to create. ${result.error || 'Please check your input fields.'}`);
+      const text = await response.text(); // ✅ use text() instead of json()
+      try {
+        const result = JSON.parse(text); // ✅ safely try to parse it
+        if (response.ok) {
+          alert('✅ Successfully created!');
+          console.log('Created:', result);
+        } else {
+          console.error('API Error Response:', result);
+          alert(`❌ Failed to create. ${result.error || 'Please check your input fields.'}`);
+        }
+      } catch (parseErr) {
+        console.error('❌ Response was not JSON:', text);
+        alert('🚫 Server returned unexpected response. Check DevTools > Network for details.');
       }
+
     } catch (err) {
-      console.error('Network or unexpected error:', err);
+      console.error('Network error:', err);
       alert('🚫 Error while creating: ' + err.message);
     }
   }
