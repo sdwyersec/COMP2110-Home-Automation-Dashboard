@@ -38,9 +38,9 @@ export class DeviceSensorControlWidget extends LitElement {
   constructor() {
     super();
     this.label = '';
-    this.type = 'light'; // default device type
+    this.type = 'light';
     this.location = '';
-    this.mode = 'device'; // 'device' or 'sensor'
+    this.mode = 'device';
   }
 
   handleInput(e) {
@@ -50,8 +50,8 @@ export class DeviceSensorControlWidget extends LitElement {
   async handleSubmit(e) {
     e.preventDefault();
 
-    const url = this.mode === 'device' 
-      ? 'https://comp2110-portal-server.fly.dev/devices/' 
+    const url = this.mode === 'device'
+      ? 'https://comp2110-portal-server.fly.dev/devices/'
       : 'https://comp2110-portal-server.fly.dev/sensors/';
 
     const payload = this.mode === 'device' ? {
@@ -84,13 +84,14 @@ export class DeviceSensorControlWidget extends LitElement {
 
       if (response.ok) {
         alert('✅ Successfully created!');
-        console.log(result);
+        console.log('Created:', result);
       } else {
-        alert(`❌ Failed to create. ${result.error || 'Check your input.'}`);
+        console.error('API Error Response:', result);
+        alert(`❌ Failed to create. ${result.error || 'Please check your input fields.'}`);
       }
     } catch (err) {
-      console.error(err);
-      alert('🚫 Error while creating.');
+      console.error('Network or unexpected error:', err);
+      alert('🚫 Error while creating: ' + err.message);
     }
   }
 
@@ -103,11 +104,29 @@ export class DeviceSensorControlWidget extends LitElement {
           <option value="sensor">Sensor</option>
         </select>
 
-        <input type="text" name="label" placeholder="Label" @input="${this.handleInput}" required />
+        <input
+          type="text"
+          name="label"
+          placeholder="Label"
+          @input="${this.handleInput}"
+          required
+        />
 
-        <input type="text" name="type" placeholder="Type (e.g., light, heater, tempHumidity)" @input="${this.handleInput}" required />
+        <input
+          type="text"
+          name="type"
+          placeholder="Type (e.g., light, heater, tempHumidity)"
+          @input="${this.handleInput}"
+          required
+        />
 
-        <input type="number" name="location" placeholder="Location ID (e.g., 1)" @input="${this.handleInput}" required />
+        <input
+          type="number"
+          name="location"
+          placeholder="Location ID (e.g., 1)"
+          @input="${this.handleInput}"
+          required
+        />
 
         <button type="submit">Create</button>
       </form>
