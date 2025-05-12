@@ -116,10 +116,10 @@ class Comp2110Dashboard extends LitElement {
             <home-overview-widget></home-overview-widget>
           </widget-column>
           <widget-column>
-            <todo-widget></todo-widget>
+           
           </widget-column>
           <widget-column>
-            <!-- widget -->
+             <todo-widget></todo-widget>
           </widget-column>
         </main>
 
