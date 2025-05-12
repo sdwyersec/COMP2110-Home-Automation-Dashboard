@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js';
+import { BASE_URL } from './config.js';
 
 export class DeviceSensorControlWidget extends LitElement {
   static styles = css`
@@ -38,9 +39,9 @@ export class DeviceSensorControlWidget extends LitElement {
   constructor() {
     super();
     this.label = '';
-    this.type = 'light';
+    this.type = 'light'; // default device type
     this.location = '';
-    this.mode = 'device';
+    this.mode = 'device'; // 'device' or 'sensor'
   }
 
   handleInput(e) {
@@ -50,9 +51,9 @@ export class DeviceSensorControlWidget extends LitElement {
   async handleSubmit(e) {
     e.preventDefault();
 
-    const url = this.mode === 'device'
-      ? 'https://comp2110-portal-server.fly.dev/devices'   // ✅ FIXED: no trailing slash
-      : 'https://comp2110-portal-server.fly.dev/sensors';  // ✅ FIXED: no trailing slash
+    const url = this.mode === 'device' 
+      ? 'https://comp2110-portal-server.fly.dev/devices/' 
+      : 'https://comp2110-portal-server.fly.dev/sensors/';
 
     const payload = this.mode === 'device' ? {
       label: this.label,
@@ -80,24 +81,17 @@ export class DeviceSensorControlWidget extends LitElement {
         body: JSON.stringify(payload)
       });
 
-      const text = await response.text(); // ✅ use text() instead of json()
-      try {
-        const result = JSON.parse(text); // ✅ safely try to parse it
-        if (response.ok) {
-          alert('✅ Successfully created!');
-          console.log('Created:', result);
-        } else {
-          console.error('API Error Response:', result);
-          alert(`❌ Failed to create. ${result.error || 'Please check your input fields.'}`);
-        }
-      } catch (parseErr) {
-        console.error('❌ Response was not JSON:', text);
-        alert('🚫 Server returned unexpected response. Check DevTools > Network for details.');
-      }
+      const result = await response.json();
 
+      if (response.ok) {
+        alert('✅ Successfully created!');
+        console.log(result);
+      } else {
+        alert(`❌ Failed to create. ${result.error || 'Check your input.'}`);
+      }
     } catch (err) {
-      console.error('Network error:', err);
-      alert('🚫 Error while creating: ' + err.message);
+      console.error(err);
+      alert('🚫 Error while creating.');
     }
   }
 
@@ -110,29 +104,11 @@ export class DeviceSensorControlWidget extends LitElement {
           <option value="sensor">Sensor</option>
         </select>
 
-        <input
-          type="text"
-          name="label"
-          placeholder="Label"
-          @input="${this.handleInput}"
-          required
-        />
+        <input type="text" name="label" placeholder="Label" @input="${this.handleInput}" required />
 
-        <input
-          type="text"
-          name="type"
-          placeholder="Type (e.g., light, heater, tempHumidity)"
-          @input="${this.handleInput}"
-          required
-        />
+        <input type="text" name="type" placeholder="Type (e.g., light, heater, tempHumidity)" @input="${this.handleInput}" required />
 
-        <input
-          type="number"
-          name="location"
-          placeholder="Location ID (e.g., 1)"
-          @input="${this.handleInput}"
-          required
-        />
+        <input type="number" name="location" placeholder="Location ID (e.g., 1)" @input="${this.handleInput}" required />
 
         <button type="submit">Create</button>
       </form>
