@@ -3,14 +3,10 @@ import './components/widget-block.js';
 import './components/widget-column.js';
 import './components/ad-widget.js';
 import './components/login-widget.js';
-<<<<<<< HEAD
 import './components/device-controller.js';
-
-=======
 import './device-sensor-control-widget.js';
 import './shopping-list-widget.js';
 import './home-overview-widget.js';
->>>>>>> e56f62665f122182785f7d88b2042415c5807a56
 
 class Comp2110Dashboard extends LitElement {
   static properties = {
@@ -96,31 +92,7 @@ class Comp2110Dashboard extends LitElement {
           <login-widget></login-widget>
         </header>
 
-<<<<<<< HEAD
-<main>
-  <widget-column header="Left">
-    <widget-block header="First Widget"></widget-block>
-    <widget-block header="Second Widget"></widget-block>
-    <widget-block header="Third Widget"></widget-block>
-  </widget-column>  
-
-  <widget-column header="Middle">
-    <widget-block header="First Widget"></widget-block>
-    <widget-block header="Second Widget"></widget-block>
-    <widget-block header="Third Widget"></widget-block>
-  </widget-column>  
-
-  <widget-column header="Right">
-    <ad-widget></ad-widget>
-    <device-controller deviceId="1"></device-controller>
-    <widget-block header="Fourth Widget"></widget-block>
-    <widget-block header="Fifth Widget"></widget-block>
-  </widget-column>
-</main>
-
-=======
         <hr />
->>>>>>> e56f62665f122182785f7d88b2042415c5807a56
 
         <!-- First Row -->
         <main>
@@ -132,6 +104,7 @@ class Comp2110Dashboard extends LitElement {
           </widget-column>
           <widget-column>
             <ad-widget></ad-widget>
+            <device-controller deviceId="1"></device-controller>
           </widget-column>
         </main>
 
