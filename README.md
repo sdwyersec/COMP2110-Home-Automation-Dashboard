@@ -9,6 +9,7 @@ file with some documentation on your group's implementation.
 |----------|----------|----------|
 |Simon Dwyer|48410543|Shopping list widget|
 |Kartik Malik|47963387|Weather widget|
+|Anwar Charif|47667915|Device Controller Widget|
 
 ## Features
 ### Shopping List Widget
