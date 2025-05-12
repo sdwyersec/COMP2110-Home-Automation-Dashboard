@@ -8,6 +8,7 @@ import './device-sensor-control-widget.js';
 import './shopping-list-widget.js';
 import './home-overview-widget.js';
 
+
 class Comp2110Dashboard extends LitElement {
   static properties = {
     header: { type: String },

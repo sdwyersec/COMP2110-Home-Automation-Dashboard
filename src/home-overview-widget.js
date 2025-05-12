@@ -1,30 +1,42 @@
 import { LitElement, html, css } from 'https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js';
 
-
 export class HomeOverviewWidget extends LitElement {
   static styles = css`
-      :host {
-    display: block;
-    padding: 1rem;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    color: black; /* ✅ Add this */
-  }
+    :host {
+      display: block;
+      padding: 1rem;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      color: black; /* Makes text visible */
+    }
+
     .location {
       margin-bottom: 20px;
       border-bottom: 1px solid #ddd;
       padding-bottom: 10px;
     }
+
     .location h4 {
       margin: 0 0 10px 0;
     }
+
     ul {
       list-style: none;
       padding-left: 20px;
     }
+
     li {
       margin-bottom: 5px;
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 5px;
+      background-color: #f5f5f5;
+      transition: background 0.3s;
+    }
+
+    li:hover {
+      background-color: #e0e0e0;
     }
   `;
 
@@ -71,11 +83,15 @@ export class HomeOverviewWidget extends LitElement {
 
       this.devices = devData;
       this.sensors = sensData;
-      
+
       this.requestUpdate();
     } catch (err) {
       console.error('Error loading data:', err);
     }
+  }
+
+  showItemInfo(item) {
+    alert(`📋 Device/Sensor Info:\n\nLabel: ${item.label}\nType: ${item.type}\nLocation: ${this.locations[item.location] || 'Unknown'}`);
   }
 
   render() {
@@ -95,7 +111,9 @@ export class HomeOverviewWidget extends LitElement {
           <h4>${this.locations[locId] || 'Unknown Location'}</h4>
           <ul>
             ${items.map(item => html`
-              <li>${item.label} (${item.type})</li>
+              <li @click=${() => this.showItemInfo(item)}>
+                <strong>${item.label}</strong> (${item.type})
+              </li>
             `)}
           </ul>
         </div>
