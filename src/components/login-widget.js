@@ -89,7 +89,9 @@ class LoginWidget extends LitElement {
         headers: {'Content-Type': 'application/json'}
     }).then(result => result.json()).then(response => {
         this.user = response;
-        storeUser(response);
+        localStorage.setItem('token', response.token);
+localStorage.setItem('user', JSON.stringify(response));
+
     })
   }
 
