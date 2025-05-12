@@ -1,5 +1,4 @@
 import { LitElement, html, css } from 'https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js';
-import { BASE_URL } from '../config.js';
 
 export class DeviceSensorControlWidget extends LitElement {
   static styles = css`
@@ -52,8 +51,8 @@ export class DeviceSensorControlWidget extends LitElement {
     e.preventDefault();
 
     const url = this.mode === 'device'
-      ? `${BASE_URL}/devices`
-      : `${BASE_URL}/sensors`;
+      ? 'https://comp2110-portal-server.fly.dev/devices'   // ✅ FIXED: no trailing slash
+      : 'https://comp2110-portal-server.fly.dev/sensors';  // ✅ FIXED: no trailing slash
 
     const payload = this.mode === 'device' ? {
       label: this.label,
@@ -81,23 +80,24 @@ export class DeviceSensorControlWidget extends LitElement {
         body: JSON.stringify(payload)
       });
 
-      const text = await response.text();
+      const text = await response.text(); // ✅ use text() instead of json()
       try {
-        const result = JSON.parse(text);
+        const result = JSON.parse(text); // ✅ safely try to parse it
         if (response.ok) {
           alert('✅ Successfully created!');
           console.log('Created:', result);
         } else {
-          console.error('Server Error:', result);
-          alert(`❌ Failed to create: ${result.error || 'Check input values'}`);
+          console.error('API Error Response:', result);
+          alert(`❌ Failed to create. ${result.error || 'Please check your input fields.'}`);
         }
-      } catch (jsonErr) {
-        console.error('❌ Not JSON:', text);
-        alert('🚫 Server returned unexpected content. Check DevTools > Network.');
+      } catch (parseErr) {
+        console.error('❌ Response was not JSON:', text);
+        alert('🚫 Server returned unexpected response. Check DevTools > Network for details.');
       }
+
     } catch (err) {
-      console.error('🚨 Fetch Error:', err);
-      alert('🚫 Network error: ' + err.message);
+      console.error('Network error:', err);
+      alert('🚫 Error while creating: ' + err.message);
     }
   }
 
