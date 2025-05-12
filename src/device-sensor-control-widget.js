@@ -1,6 +1,5 @@
 import { LitElement, html, css } from 'https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js';
 
-
 export class DeviceSensorControlWidget extends LitElement {
   static styles = css`
     :host {
@@ -10,22 +9,27 @@ export class DeviceSensorControlWidget extends LitElement {
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       margin-bottom: 20px;
+      color: black;
     }
+
     form {
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
+
     input, select, button {
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 5px;
     }
+
     button {
       background-color: #1976d2;
       color: white;
       cursor: pointer;
     }
+
     button:hover {
       background-color: #125aa1;
     }
@@ -53,13 +57,16 @@ export class DeviceSensorControlWidget extends LitElement {
     const payload = this.mode === 'device' ? {
       label: this.label,
       type: this.type,
-      location: this.location,
+      location: Number(this.location),
       status: 'off',
-      properties: {}
+      properties: {
+        brightness: 50,
+        color: '#ffffff'
+      }
     } : {
       label: this.label,
       type: this.type,
-      location: this.location,
+      location: Number(this.location),
       properties: null
     };
 
@@ -73,14 +80,17 @@ export class DeviceSensorControlWidget extends LitElement {
         body: JSON.stringify(payload)
       });
 
+      const result = await response.json();
+
       if (response.ok) {
-        alert('Successfully created!');
+        alert('✅ Successfully created!');
+        console.log(result);
       } else {
-        alert('Failed to create. Check your input.');
+        alert(`❌ Failed to create. ${result.error || 'Check your input.'}`);
       }
     } catch (err) {
       console.error(err);
-      alert('Error while creating.');
+      alert('🚫 Error while creating.');
     }
   }
 
@@ -97,7 +107,7 @@ export class DeviceSensorControlWidget extends LitElement {
 
         <input type="text" name="type" placeholder="Type (e.g., light, heater, tempHumidity)" @input="${this.handleInput}" required />
 
-        <input type="number" name="location" placeholder="Location ID" @input="${this.handleInput}" required />
+        <input type="number" name="location" placeholder="Location ID (e.g., 1)" @input="${this.handleInput}" required />
 
         <button type="submit">Create</button>
       </form>
