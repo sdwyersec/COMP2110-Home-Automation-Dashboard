@@ -27,11 +27,11 @@ class LoginWidget extends LitElement {
     }
 
     .logout-button {
-      background-color: #e74c3c;
+      background-color:rgba(220, 42, 78, 0.84);
     }
 
     .logout-button:hover {
-      background-color: #c0392b;
+      background-color: rgba(220, 42, 78, 0.61);
     }
 
     .login-button:hover {
