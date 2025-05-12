@@ -19,6 +19,7 @@ class TodoWidget extends HTMLElement {
         padding: 16px;
         max-width: 320px;
         font-family: Arial, sans-serif;
+        color: #333; /* ensure list text is visible */
       }
       h2 {
         margin: 0 0 12px;
@@ -38,6 +39,7 @@ class TodoWidget extends HTMLElement {
         align-items: center;
         padding: 8px;
         border-bottom: 1px solid #ddd;
+        color: #333; /* visible task text */
       }
       li:last-child {
         border-bottom: none;
