@@ -15,19 +15,18 @@ export class ShoppingListWidget extends LitElement {
   // Style
   static styles = css`
     :host {
-      display: block;
-      max-width: 400px;
-      height: 420px;
-      margin: 2rem auto;
-      padding: 1rem;
-      background: rgba(177, 177, 224, 0.2);
-      backdrop-filter: blur(10px);
-      border-radius: 12px;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
-      color: #fff;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      box-sizing: border-box;
-    }
+  display: block;
+  padding: 1rem;
+  background: rgba(177, 177, 224, 0.2);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  color: white;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 500px;
+}
+
 
     h3 {
       text-align: center;
