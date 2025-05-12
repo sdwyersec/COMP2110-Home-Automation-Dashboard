@@ -7,7 +7,7 @@ import './components/device-controller.js';
 import './device-sensor-control-widget.js';
 import './shopping-list-widget.js';
 import './home-overview-widget.js';
-import './todo-widget.js';
+
 
 
 class Comp2110Dashboard extends LitElement {
@@ -119,8 +119,7 @@ class Comp2110Dashboard extends LitElement {
             <!-- widget -->
           </widget-column>
           <widget-column>
-
-             <todo-widget></todo-widget>
+            <!-- widget -->
           </widget-column>
         </main>
 
