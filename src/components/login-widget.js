@@ -92,7 +92,7 @@ class LoginWidget extends LitElement {
 
     .modal-content input[type="submit"] {
       padding: 10px;
-      background-color: #4a4c8a;
+      background-color:rgba(74, 76, 138, 0.92);
       color: white;
       border: none;
       border-radius: 6px;
@@ -101,12 +101,12 @@ class LoginWidget extends LitElement {
     }
 
     .modal-content input[type="submit"]:hover {
-      background-color: #52537e;
+      background-color:rgba(82, 83, 126, 0.94);
     }
 
     .cancel-button {
-      background-color: #ccc;
-      color: black;
+      background-color:rgba(14, 14, 28, 0.71);
+      color: white;
       border: none;
       padding: 10px;
       border-radius: 6px;
@@ -115,7 +115,7 @@ class LoginWidget extends LitElement {
     }
 
     .cancel-button:hover {
-      background-color: #bbb;
+      background-color: rgba(80, 80, 82, 0.77);
     }
   `;
 
