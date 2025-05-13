@@ -5,7 +5,7 @@ import { getUser } from '../auth.js';
 
 // Define custom element
 export class ShoppingListWidget extends LitElement {
-  // Declare reactive properties
+  // Declare properties
   static properties = {
     items: { type: Array, state: true },  // List of shopping items
     newItem: { type: String },  // Input field for new item
@@ -330,5 +330,5 @@ export class ShoppingListWidget extends LitElement {
   }
 }
 
-// Register custom element so it can be used in HTML as <shopping-list-widget>
+// Register custom element
 customElements.define('shopping-list-widget', ShoppingListWidget);
