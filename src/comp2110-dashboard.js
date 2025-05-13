@@ -12,6 +12,9 @@ import './todo-widget.js';
 class Comp2110Dashboard extends LitElement {
   static properties = {
     header: { type: String },
+    currentSlide: { type: Number },
+    totalSlides: { type: Number },
+    slidingDirection: { type: String }
   };
 
   static styles = css`
@@ -49,7 +52,7 @@ class Comp2110Dashboard extends LitElement {
       flex-direction: column;
       align-items: center;
       margin-bottom: 10px;
-      position: relative; 
+      position: relative;
     }
 
     h1 {
@@ -57,7 +60,7 @@ class Comp2110Dashboard extends LitElement {
       font-size: 2.5rem;
       font-family: 'Nunito', sans-serif;
       font-weight: bold;
-      color: transparent; 
+      color: transparent;
       position: relative;
     }
 
@@ -97,10 +100,50 @@ class Comp2110Dashboard extends LitElement {
       margin: 10px 0 20px 0;
     }
 
-    main {
-      display: flex;
-      gap: 10px;
+    /* Carousel styles */
+    .carousel {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
       margin-bottom: 20px;
+    }
+
+    .slides-container {
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+      width: 100%;
+    }
+
+    .slide {
+      min-width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .carousel-nav {
+      display: flex;
+      justify-content: center;
+      margin-top: 15px;
+      gap: 10px;
+    }
+
+    .carousel-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s;
+    }
+
+    .carousel-btn:hover {
+      background: rgba(255, 255, 255, 0.4);
     }
 
     .app-footer {
@@ -116,6 +159,51 @@ class Comp2110Dashboard extends LitElement {
   constructor() {
     super();
     this.header = 'COMP2110 Home Automation';
+    this.currentSlide = 0;
+    this.totalSlides = 2;
+    this.slidingDirection = 'right';
+  }
+
+  firstUpdated() {
+    this.slidesContainer = this.shadowRoot.querySelector('.slides-container');
+    this.slides = this.shadowRoot.querySelectorAll('.slide');
+    this.updateSlidePosition();
+  }
+
+  updateSlidePosition() {
+    this.slidesContainer.style.transform = `translateX(-${this.currentSlide * 100}%)`;
+  }
+
+  nextSlide() {
+  if (this.currentSlide < this.totalSlides) {
+    this.currentSlide++;
+    this.updateSlidePosition();
+  }
+
+  if (this.currentSlide === this.totalSlides) {
+    setTimeout(() => {
+      this.slidesContainer.style.transition = 'none';
+      this.currentSlide = 0;
+      this.updateSlidePosition();
+      void this.slidesContainer.offsetWidth;
+      this.slidesContainer.style.transition = 'transform 0.5s ease-in-out';
+    }, 500);
+  }
+}
+
+  prevSlide() {
+    this.slidingDirection = 'left';
+    
+    if (this.currentSlide === 0) {
+      this.slidesContainer.style.transition = 'none';
+      this.currentSlide = this.totalSlides;
+      this.updateSlidePosition();
+      void this.slidesContainer.offsetWidth;
+      this.slidesContainer.style.transition = 'transform 0.5s ease-in-out';
+    }
+    
+    this.currentSlide = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
+    setTimeout(() => this.updateSlidePosition(), 10);
   }
 
   render() {
@@ -126,34 +214,57 @@ class Comp2110Dashboard extends LitElement {
           <login-widget></login-widget>
         </header>
 
-        <hr />
+        <hr/>
 
-        <!-- First Row -->
-        <main>
-          <widget-column>
-            <device-sensor-control-widget></device-sensor-control-widget>
-          </widget-column>
-          <widget-column>
-            <shopping-list-widget></shopping-list-widget>
-          </widget-column>
-          <widget-column>
-            <ad-widget></ad-widget>
-            <device-controller deviceId="1"></device-controller>
-          </widget-column>
-        </main>
+        <div class="carousel">
+          <div class="slides-container">
+            <!-- Slide 1 (Duplicate for seamless looping) -->
+            <div class="slide">
+              <widget-column>
+                <device-sensor-control-widget></device-sensor-control-widget>
+              </widget-column>
+              <widget-column>
+                <shopping-list-widget></shopping-list-widget>
+              </widget-column>
+              <widget-column>
+                <ad-widget></ad-widget>
+                <device-controller deviceId="1"></device-controller>
+              </widget-column>
+            </div>
 
-        <!-- Second Row -->
-        <main>
-          <widget-column>
-            <home-overview-widget></home-overview-widget>
-          </widget-column>
-          <widget-column>
-            <todo-widget></todo-widget>
-          </widget-column>
-          <widget-column>
-            <!-- widget -->
-          </widget-column>
-        </main>
+            <!-- Slide 2 -->
+            <div class="slide">
+              <widget-column>
+                <home-overview-widget></home-overview-widget>
+              </widget-column>
+              <widget-column>
+                <todo-widget></todo-widget>
+              </widget-column>
+              <widget-column>
+                <!-- Empty column or add another widget -->
+              </widget-column>
+            </div>
+
+            <!-- Slide 1 Duplicate (for looping) -->
+            <div class="slide">
+              <widget-column>
+                <device-sensor-control-widget></device-sensor-control-widget>
+              </widget-column>
+              <widget-column>
+                <shopping-list-widget></shopping-list-widget>
+              </widget-column>
+              <widget-column>
+                <ad-widget></ad-widget>
+                <device-controller deviceId="1"></device-controller>
+              </widget-column>
+            </div>
+          </div>
+
+          <div class="carousel-nav">
+            <button class="carousel-btn" @click=${this.prevSlide}>←</button>
+            <button class="carousel-btn" @click=${this.nextSlide}>→</button>
+          </div>
+        </div>
 
         <p class="app-footer">
           A product of the COMP2110 Web Development Collective &copy; 2025
