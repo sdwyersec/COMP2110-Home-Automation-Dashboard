@@ -4,10 +4,10 @@ import './components/widget-column.js';
 import './components/ad-widget.js';
 import './components/login-widget.js';
 import './components/device-controller.js';
-import './device-sensor-control-widget.js';
-import './shopping-list-widget.js';
-import './home-overview-widget.js';
-import './todo-widget.js';
+import './components/device-sensor-control-widget.js';
+import './components/shopping-list-widget.js';
+import './components/home-overview-widget.js';
+import './components/todo-widget.js';
 
 class Comp2110Dashboard extends LitElement {
   static properties = {

@@ -1,7 +1,7 @@
 // Import
 import { LitElement, html, css } from 'https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js';
-import { BASE_URL } from './config.js';
-import { getUser } from './auth.js';
+import { BASE_URL } from '../config.js';
+import { getUser } from '../auth.js';
 
 // Define custom element
 export class TodoWidget extends LitElement {

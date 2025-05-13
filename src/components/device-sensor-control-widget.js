@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js';
-import { BASE_URL } from './config.js';
+import { BASE_URL } from '../config.js';
 
 export class DeviceSensorControlWidget extends LitElement {
   static styles = css`
