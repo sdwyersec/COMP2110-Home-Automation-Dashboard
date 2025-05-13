@@ -30,7 +30,6 @@ class Comp2110Dashboard extends LitElement {
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      font-family: 'Nunito', sans-serif;
     }
 
     .content-wrapper {
@@ -50,14 +49,41 @@ class Comp2110Dashboard extends LitElement {
       flex-direction: column;
       align-items: center;
       margin-bottom: 10px;
+      position: relative; 
     }
 
     h1 {
       margin: 0;
-      font-size: 2rem;
+      font-size: 2.5rem;
       font-family: 'Nunito', sans-serif;
-      font-weight: 700;
-      color: white;
+      font-weight: bold;
+      color: transparent; 
+      position: relative;
+    }
+
+    h1::after {
+      content: "COMP2110 Home Automation";
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: transparent;
+      background: linear-gradient(90deg,rgb(50, 18, 215),rgb(210, 31, 174), rgb(50, 18, 215));
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      animation: text-glow 8s linear infinite;
+    }
+
+    @keyframes text-glow {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
     }
 
     login-widget {
@@ -78,8 +104,8 @@ class Comp2110Dashboard extends LitElement {
     }
 
     .app-footer {
-      font-size: calc(12px + 0.5vmin);
-      color: white;
+      font-size: calc(10px + 0.5vmin);
+      color:rgba(255, 255, 255, 0.67);
     }
 
     .app-footer a {
