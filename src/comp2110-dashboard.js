@@ -8,6 +8,7 @@ import './components/device-sensor-control-widget.js';
 import './components/shopping-list-widget.js';
 import './components/home-overview-widget.js';
 import './components/todo-widget.js';
+import './components/weather-widget.js';
 
 class Comp2110Dashboard extends LitElement {
   static properties = {
@@ -227,8 +228,7 @@ class Comp2110Dashboard extends LitElement {
                 <shopping-list-widget></shopping-list-widget>
               </widget-column>
               <widget-column>
-                <ad-widget></ad-widget>
-                <device-controller deviceId="1"></device-controller>
+                <weather-widget></weather-widget>
               </widget-column>
             </div>
 
@@ -236,15 +236,15 @@ class Comp2110Dashboard extends LitElement {
             <div class="slide">
               <widget-column>
                 <home-overview-widget></home-overview-widget>
+                <ad-widget></ad-widget>
               </widget-column>
               <widget-column>
                 <todo-widget></todo-widget>
               </widget-column>
               <widget-column>
-                <!-- Empty column or add another widget -->
+                <device-controller deviceId="1"></device-controller>
               </widget-column>
             </div>
-
             <!-- Slide 1 Duplicate (for looping) -->
             <div class="slide">
               <widget-column>
