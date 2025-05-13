@@ -7,14 +7,15 @@ file with some documentation on your group's implementation.
 ## Group Members 
 | Name | Student ID | Contribution |
 |----------|----------|----------|
-|Simon Dwyer|48410543|Shopping list widget|
+|Simon Dwyer|48410543|Shopping list widget, page styling, carousel feature|
 |Kartik Malik|47963387|Weather widget|
 |Anwar Charif|47667915|Device Controller Widget|
 
 ## Features
 ### Shopping List Widget
 A <shopping-list-widget> that lets logged-in users view, add, and delete items from a shared shopping list. The list updates automatically when the widget loads and whenever changes are made, keeping everything in sync.
-#
+### UI Design + Carousel
+Modern glassmorphic UI with a responsive layout. It includes a smooth sliding carousel that allows users to navigate between different widget panels using left and right arrows.
 
 ### 🔐 Authentication Integration
 
