@@ -2,131 +2,120 @@ import { LitElement, html, css } from 'https://cdn.jsdelivr.net/gh/lit/dist@2/co
 import { BASE_URL } from '../config.js';
 import { getUser } from '../auth.js';
 
-
-class DeviceController extends LitElement {
+export class DeviceController extends LitElement {
   static properties = {
     deviceId: { type: Number },
     device: { state: true },
-    loading: { state: true },
     error: { state: true }
   };
 
   static styles = css`
-    :host {
-      display: block;
-      padding: 1em;
-      background-color: white;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      margin: 1em 0;
-      text-align: left;
+    .device-box {
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      padding: 1rem;
+      margin: 1rem;
     }
-
-    h3 {
-      margin-top: 0;
-    }
-
-    button {
-      padding: 0.5em 1em;
-      font-size: 1em;
-    }
-
-    .error {
-      color: red;
-    }
-
-    .properties {
-      margin-top: 1em;
-    }
+    .on { background-color: #d4edda; }
+    .off { background-color: #f8d7da; }
   `;
 
   constructor() {
     super();
-    this.deviceId = null;
+    this.deviceId = 1178;
     this.device = null;
-    this.loading = false;
     this.error = null;
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    this.fetchDevice();
-  }
+connectedCallback() {
+  super.connectedCallback();
+  this.fetchDevice();
+
+const user = getUser();
+if (user?.token) {
+  fetch(`${BASE_URL}/home/devices`, {
+    headers: {
+      'Authorization': `Bearer ${user.token}`
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    console.log(' Your devices:', data);
+  })
+  .catch(err => console.error('Failed to list devices:', err));
+}
+
+}
+
 
   async fetchDevice() {
-    this.loading = true;
-    this.error = null;
-
     try {
-      const response = await fetch(`${BASE_URL}devices/${this.deviceId}`);
-      if (!response.ok) throw new Error('Failed to fetch device.');
-      this.device = await response.json();
+      const user = getUser();
+      if (!user?.token) {
+        this.error = 'Not logged in';
+        return;
+      }
+
+const res = await fetch(`${BASE_URL}/home/devices/${this.deviceId}`, {
+  headers: {
+    'Authorization': `Bearer ${user.token}`
+  }
+});
+
+
+      if (!res.ok) throw new Error('Failed to fetch device');
+      this.device = await res.json();
     } catch (err) {
       this.error = err.message;
-    } finally {
-      this.loading = false;
     }
   }
 
   async toggleStatus() {
-    const user = getUser();
-    if (!user) {
-      alert('Please log in to control devices.');
-      return;
-    }
-
     const newStatus = this.device.status === 'on' ? 'off' : 'on';
 
     try {
-      const response = await fetch(`${BASE_URL}devices/${this.deviceId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.token}`
-        },
-        body: JSON.stringify({
-          status: newStatus,
-          properties: this.device.properties || {}
-        })
-      });
+      const user = getUser();
+      if (!user?.token) {
+        this.error = 'Not logged in';
+        return;
+      }
 
-      if (!response.ok) throw new Error('Failed to update device.');
+const res = await fetch(`${BASE_URL}/home/devices/${this.deviceId}`, {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${user.token}`
+  },
+  body: JSON.stringify({
+    status: newStatus,
+    properties: this.device.properties
+  })
+});
 
-      this.device.status = newStatus;
-      this.requestUpdate();
+      if (!res.ok) throw new Error('Failed to update device');
+      this.device = await res.json();
     } catch (err) {
-      alert(err.message);
+      this.error = err.message;
     }
   }
 
   render() {
-    console.log('Rendering <device-controller>', this.device);
-
-    if (this.loading) {
-      return html`<p>Loading device...</p>`;
-    }
-
     if (this.error) {
-      return html`<p class="error">Error: ${this.error}</p>`;
+      return html`<p>Error: ${this.error}</p>`;
     }
 
     if (!this.device) {
-      return html`<p>No device found.</p>`;
+      return html`<p>Loading device...</p>`;
     }
 
     return html`
-      <h3>${this.device.label}</h3>
-      <p>Status: <strong>${this.device.status}</strong></p>
-      <button @click=${this.toggleStatus}>
-        Turn ${this.device.status === 'on' ? 'Off' : 'On'}
-      </button>
-
-      ${this.device.properties ? html`
-        <div class="properties">
-          <p>Brightness: ${this.device.properties.brightness ?? 'N/A'}</p>
-          <p>Color: ${this.device.properties.color ?? 'N/A'}</p>
-        </div>
-      ` : ''}
+      <div class="device-box ${this.device.status}">
+        <h3>${this.device.label}</h3>
+        <p>Status: ${this.device.status}</p>
+        <button @click=${this.toggleStatus}>
+          Turn ${this.device.status === 'on' ? 'Off' : 'On'}
+        </button>
+      </div>
     `;
   }
 }
