@@ -101,7 +101,7 @@ export class WeatherWidget extends LitElement {
   // HTML structure for widget
   render() {
     return html`
-      <h3>Weather Widget</h3>
+      <h3>Weather</h3>
 
       <!-- If error, display error message -->
       ${this.error
