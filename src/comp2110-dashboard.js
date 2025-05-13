@@ -15,7 +15,6 @@ class Comp2110Dashboard extends LitElement {
     header: { type: String },
     currentSlide: { type: Number },
     totalSlides: { type: Number },
-    slidingDirection: { type: String }
   };
 
   static styles = css`
@@ -79,15 +78,9 @@ class Comp2110Dashboard extends LitElement {
     }
 
     @keyframes text-glow {
-      0% {
-        background-position: 0% 50%;
-      }
-      50% {
-        background-position: 100% 50%;
-      }
-      100% {
-        background-position: 0% 50%;
-      }
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
     login-widget {
@@ -101,7 +94,6 @@ class Comp2110Dashboard extends LitElement {
       margin: 10px 0 20px 0;
     }
 
-    /* Carousel styles */
     .carousel {
       position: relative;
       width: 100%;
@@ -160,14 +152,12 @@ class Comp2110Dashboard extends LitElement {
   constructor() {
     super();
     this.header = 'COMP2110 Home Automation';
-    this.currentSlide = 0;
-    this.totalSlides = 2;
-    this.slidingDirection = 'right';
+    this.currentSlide = 1; 
+    this.totalSlides = 3; 
   }
 
   firstUpdated() {
     this.slidesContainer = this.shadowRoot.querySelector('.slides-container');
-    this.slides = this.shadowRoot.querySelectorAll('.slide');
     this.updateSlidePosition();
   }
 
@@ -176,35 +166,37 @@ class Comp2110Dashboard extends LitElement {
   }
 
   nextSlide() {
-  if (this.currentSlide < this.totalSlides) {
-    this.currentSlide++;
-    this.updateSlidePosition();
-  }
-
-  if (this.currentSlide === this.totalSlides) {
-    setTimeout(() => {
-      this.slidesContainer.style.transition = 'none';
-      this.currentSlide = 0;
+    if (this.currentSlide <= this.totalSlides) {
+      this.currentSlide++;
       this.updateSlidePosition();
-      void this.slidesContainer.offsetWidth;
-      this.slidesContainer.style.transition = 'transform 0.5s ease-in-out';
-    }, 500);
+    }
+
+    if (this.currentSlide === this.totalSlides + 1) {
+      setTimeout(() => {
+        this.slidesContainer.style.transition = 'none';
+        this.currentSlide = 1;
+        this.updateSlidePosition();
+        void this.slidesContainer.offsetWidth;
+        this.slidesContainer.style.transition = 'transform 0.5s ease-in-out';
+      }, 500);
+    }
   }
-}
 
   prevSlide() {
-    this.slidingDirection = 'left';
-    
-    if (this.currentSlide === 0) {
-      this.slidesContainer.style.transition = 'none';
-      this.currentSlide = this.totalSlides;
+    if (this.currentSlide > 0) {
+      this.currentSlide--;
       this.updateSlidePosition();
-      void this.slidesContainer.offsetWidth;
-      this.slidesContainer.style.transition = 'transform 0.5s ease-in-out';
     }
-    
-    this.currentSlide = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
-    setTimeout(() => this.updateSlidePosition(), 10);
+
+    if (this.currentSlide === 0) {
+      setTimeout(() => {
+        this.slidesContainer.style.transition = 'none';
+        this.currentSlide = this.totalSlides;
+        this.updateSlidePosition();
+        void this.slidesContainer.offsetWidth;
+        this.slidesContainer.style.transition = 'transform 0.5s ease-in-out';
+      }, 500);
+    }
   }
 
   render() {
@@ -219,7 +211,16 @@ class Comp2110Dashboard extends LitElement {
 
         <div class="carousel">
           <div class="slides-container">
-            <!-- Slide 1 (Duplicate for seamless looping) -->
+            <!-- Duplicate Slide 3 for looping back -->
+            <div class="slide">
+              <widget-column></widget-column>
+              <widget-column>
+                <ad-widget></ad-widget>
+              </widget-column>
+              <widget-column></widget-column>
+            </div>
+
+            <!-- Slide 1 -->
             <div class="slide">
               <widget-column>
                 <device-sensor-control-widget></device-sensor-control-widget>
@@ -236,7 +237,6 @@ class Comp2110Dashboard extends LitElement {
             <div class="slide">
               <widget-column>
                 <home-overview-widget></home-overview-widget>
-                <ad-widget></ad-widget>
               </widget-column>
               <widget-column>
                 <todo-widget></todo-widget>
@@ -245,7 +245,17 @@ class Comp2110Dashboard extends LitElement {
                 <device-controller deviceId="1"></device-controller>
               </widget-column>
             </div>
-            <!-- Slide 1 Duplicate (for looping) -->
+
+            <!-- Slide 3 -->
+            <div class="slide">
+              <widget-column></widget-column>
+              <widget-column>
+                <ad-widget></ad-widget>
+              </widget-column>
+              <widget-column></widget-column>
+            </div>
+
+            <!-- Duplicate Slide 1 for looping forward -->
             <div class="slide">
               <widget-column>
                 <device-sensor-control-widget></device-sensor-control-widget>
@@ -254,8 +264,7 @@ class Comp2110Dashboard extends LitElement {
                 <shopping-list-widget></shopping-list-widget>
               </widget-column>
               <widget-column>
-                <ad-widget></ad-widget>
-                <device-controller deviceId="1"></device-controller>
+                <weather-widget></weather-widget>
               </widget-column>
             </div>
           </div>
