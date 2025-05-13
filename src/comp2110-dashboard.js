@@ -9,17 +9,18 @@ import './shopping-list-widget.js';
 import './home-overview-widget.js';
 import './todo-widget.js';
 
-
 class Comp2110Dashboard extends LitElement {
   static properties = {
     header: { type: String },
   };
 
   static styles = css`
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap');
+
     :host {
       min-height: 100vh;
       font-size: 14pt;
-      color: rgba(26, 43, 66, 0);
+      color: white;
       max-width: 960px;
       margin: 0 auto;
       text-align: center;
@@ -29,6 +30,7 @@ class Comp2110Dashboard extends LitElement {
       display: flex;
       justify-content: center;
       align-items: flex-start;
+      font-family: 'Nunito', sans-serif;
     }
 
     .content-wrapper {
@@ -52,7 +54,10 @@ class Comp2110Dashboard extends LitElement {
 
     h1 {
       margin: 0;
-      font-size: 1.5rem;
+      font-size: 2rem;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      color: white;
     }
 
     login-widget {
@@ -74,6 +79,7 @@ class Comp2110Dashboard extends LitElement {
 
     .app-footer {
       font-size: calc(12px + 0.5vmin);
+      color: white;
     }
 
     .app-footer a {
