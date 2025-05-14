@@ -31,6 +31,7 @@ export class WeatherWidget extends LitElement {
     h3 {
       text-align: center;
       margin-bottom: 1rem;
+      font-size: 25px;
     }
 
     .data-point {

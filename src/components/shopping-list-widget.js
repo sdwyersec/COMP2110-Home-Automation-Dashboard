@@ -15,23 +15,23 @@ export class ShoppingListWidget extends LitElement {
   // Style
   static styles = css`
     :host {
-  display: block;
-  padding: 1rem;
-  background: rgba(177, 177, 224, 0.2);
-  border-radius: 10px;
-  box-shadow: 0 10px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-  color: white;
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 500px;
-}
-
+      display: block;
+      padding: 1rem;
+      background: rgba(177, 177, 224, 0.2);
+      border-radius: 10px;
+      box-shadow: 0 10px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+      color: white;
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 500px;
+    }
 
     h3 {
       text-align: center;
       margin-bottom: 1rem;
       color: #ffffff;
+      font-size: 25px;
     }
 
     form {
