@@ -92,7 +92,7 @@ class LoginWidget extends LitElement {
 
     .modal-content input[type="submit"] {
       padding: 10px;
-      background-color:rgba(74, 76, 138, 0.92);
+      background-color:rgb(71, 41, 224);
       color: white;
       border: none;
       border-radius: 6px;
@@ -101,7 +101,7 @@ class LoginWidget extends LitElement {
     }
 
     .modal-content input[type="submit"]:hover {
-      background-color:rgba(82, 83, 126, 0.94);
+      background-color:rgba(67, 69, 151, 0.94);
     }
 
     .cancel-button {
