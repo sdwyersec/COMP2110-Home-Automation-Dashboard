@@ -12,21 +12,26 @@ export class TodoWidget extends LitElement {
     _hasInitialLoad: { type: Boolean, state: true } // Flag to avoid reloading on multiple connections
   };
 
-  // Styles for the widget (distinct from shopping list)
+  // Style
   static styles = css`
     :host {
       display: block;
-      border: 1px solid #ddd;
       padding: 1rem;
-      border-radius: 8px;
-      background: #f9f9f9;
-      font-family: Arial, sans-serif;
+      background: rgba(177, 177, 224, 0.2);
+      border-radius: 10px;
+      box-shadow: 0 10px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+      color: white;
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 500px;
     }
 
     h3 {
-      margin: 0 0 0.5rem;
-      font-size: 1.5rem;
-      color: #333;
+      text-align: center;
+      margin-bottom: 1rem;
+      color: #ffffff;
+      font-size: 25px;
     }
 
     form {
@@ -37,38 +42,78 @@ export class TodoWidget extends LitElement {
 
     input[type="text"] {
       flex: 1;
-      padding: 0.5rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 1rem;
-    }
-
-    button[type="submit"] {
-      padding: 0.5rem 1rem;
+      padding: 0.5rem 0.75rem;
       border: none;
-      background: #28a745;
-      color: white;
-      border-radius: 4px;
-      cursor: pointer;
+      border-radius: 6px;
       font-size: 1rem;
+      background: rgba(255, 0, 251, 0.2);
+      color: white;
+      backdrop-filter: blur(5px);
+      max-width: 220px;
     }
 
-    button[type="submit"]:hover {
-      background: #218838;
+    input::placeholder {
+      color: #ccc;
+    }
+
+    button {
+      background-color: rgb(60, 61, 105);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #52537e;
     }
 
     ul {
       list-style: none;
       padding: 0;
       margin: 0;
+      max-height: 250px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
     }
 
-    .task-item {
+    ul::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ul::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ul::-webkit-scrollbar-thumb {
+      background-color: rgba(255, 255, 255, 0.3);
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+    }
+
+    ul::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(255, 255, 255, 0.5);
+    }
+
+    li {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding: 0.5rem 0;
-      border-bottom: 1px solid #eee;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      border-radius: 8px;
+      transition: background 0.2s ease;
+      overflow-wrap: anywhere;
+    }
+
+    li.done {
+      opacity: 0.6;
+      text-decoration: line-through;
     }
 
     .item-content {
@@ -76,28 +121,31 @@ export class TodoWidget extends LitElement {
       align-items: center;
       gap: 0.5rem;
       cursor: pointer;
+      flex: 1;
     }
 
     .task-title {
-      font-size: 1rem;
-      color: #555;
+      color: #fff;
+      overflow-wrap: anywhere;
     }
 
-    .completed {
-      text-decoration: line-through;
-      color: #999;
+    input[type="checkbox"] {
+      transform: scale(1.2);
+      accent-color: rgb(60, 61, 105);
+      cursor: pointer;
     }
 
     .btn-picto {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       background: none;
       border: none;
       cursor: pointer;
-      color: #dc3545;
+      color: white;
+      padding: 0;
     }
 
     .btn-picto:hover {
-      color: #bd2130;
+      color: red;
     }
   `;
 
@@ -212,13 +260,13 @@ export class TodoWidget extends LitElement {
       </form>
       <ul>
         ${this.tasks.map((task, index) => html`
-          <li class="task-item">
+          <li class=${task.checked ? 'done' : ''}>
             <div class="item-content" @click=${() => this.toggleChecked(index)}>
               <input
                 type="checkbox"
                 .checked=${task.checked}
               />
-              <span class="task-title ${task.checked ? 'completed' : ''}">${task.title}</span>
+              <span class="task-title">${task.title}</span>
             </div>
             <button @click=${(e) => this.deleteTask(index, e)} class="btn-picto">🗑️</button>
           </li>
