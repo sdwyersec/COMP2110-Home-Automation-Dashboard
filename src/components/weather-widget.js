@@ -9,6 +9,8 @@ export class WeatherWidget extends LitElement {
     temperature: { type: Number },     // Current temp
     windSpeed: { type: Number },       // Current wind speed
     error: { type: String },           // Error msg
+    lastUpdated: { type: String },     // Timestamp of last update
+    refreshInterval: { type: Number }  // Auto-refresh interval (minutes)
   };
 
   // Styles 
@@ -47,6 +49,30 @@ export class WeatherWidget extends LitElement {
       color: #ff6b6b;
       text-align: center;
     }
+
+    /* New styles for refresh section */
+    .refresh {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .refresh-button {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .refresh-button:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
   `;
 
   // Initialise properties
@@ -56,11 +82,36 @@ export class WeatherWidget extends LitElement {
     this.temperature = null;     // Start with temp as null
     this.windSpeed = null;       // Start with wind speed as null
     this.error = '';             // Start with error as empty
+    this.lastUpdated = '';       // Start with empty last updated time
+    this.refreshInterval = 10;   // Default refresh every 10 minutes
+    this._refreshTimer = null;   // Timer for auto-refresh
   }
 
   connectedCallback() {
     super.connectedCallback();
     this.fetchGeolocationWeather();  // Fetch weather
+    this.setupAutoRefresh();         // Auto refresh 
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.clearAutoRefresh();         // Clean up timer
+  }
+
+  // Timer for automatic refreshes
+  setupAutoRefresh() {
+    this.clearAutoRefresh();  // Clear existing timer
+    // Convert min to milliseconds
+    const intervalMs = this.refreshInterval * 60 * 1000;
+    this._refreshTimer = setInterval(() => this.fetchGeolocationWeather(), intervalMs);
+  }
+
+  // Clear auto-refresh timer
+  clearAutoRefresh() {
+    if (this._refreshTimer) {
+      clearInterval(this._refreshTimer);
+      this._refreshTimer = null;
+    }
   }
 
   // Function fetch weather data based on geolocation :3
@@ -84,6 +135,8 @@ export class WeatherWidget extends LitElement {
           this.windSpeed = data.current.wind_speed_10m;
           // Format location
           this.location = `Lat: ${latitude.toFixed(2)}, Lon: ${longitude.toFixed(2)}`;
+          this.error = ''; 
+          this.lastUpdated = new Date().toLocaleTimeString();  // Set update time
         } catch (err) {
           // Handle error
           this.error = 'Failed to fetch weather data.';
@@ -96,6 +149,11 @@ export class WeatherWidget extends LitElement {
         console.error(err);
       }
     );
+  }
+
+  // Manual refresh button click
+  handleManualRefresh() {
+    this.fetchGeolocationWeather();
   }
 
   // HTML structure for widget
@@ -112,6 +170,18 @@ export class WeatherWidget extends LitElement {
             <div class="data-point"><span class="label">Temperature:</span> <span class="data">${this.temperature} °C</span></div>
             <div class="data-point"><span class="label">Wind Speed:</span> <span class="data">${this.windSpeed} km/h</span></div>
           `}
+
+      <!-- New refresh section -->
+      <div class="refresh">
+        <span>${this.lastUpdated ? `Updated: ${this.lastUpdated}` : 'Loading...'}</span>
+        <button 
+          class="refresh-button" 
+          @click=${this.handleManualRefresh}
+          ?disabled=${!this.location}
+        >
+          Refresh
+        </button>
+      </div>
     `;
   }
 }
