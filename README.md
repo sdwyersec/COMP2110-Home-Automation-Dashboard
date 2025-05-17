@@ -12,6 +12,9 @@ file with some documentation on your group's implementation.
 |Anwar Charif|47667915|Device controller widget|
 |Yug Solanki|48076031|Device sensor controller widget, home overview widget|
 
+## Project Overview
+This project is a modular home automation dashboard for COMP2110. It integrates various widgets that allow users to manage shopping lists, view weather data, control devices/sensors, and track tasks. Each widget communicates with a backend via APIs.
+
 ## Features
 ### Shopping List Widget
 A shopping-list-widget that lets logged-in users view, add, and delete items from a shopping list. The list updates automatically when the widget loads and whenever changes are made, keeping everything in sync.
@@ -27,6 +30,20 @@ A device-sensor-control-widget that allows users to create new smart devices or 
 A home-overview-widget that displays all smart devices and sensors grouped by location. It fetches data from the server and organises items into lists based on their assigned location. Useful for quickly visualising the state of a smart home setup in one view.
 ### UI Design + Carousel
 Modern glassmorphic UI with a responsive layout. It includes a smooth sliding carousel that allows users to navigate between different widget panels using left and right arrows.
+
+## Future Improvements (outside scope of assignment, for future developers :3)
+- Add customisation settings for user preferences for widget order and theme 
+- Combine sensor data with weather widget 
+- Sync todo list widget with google calendar 
+- Pop-up alerts for reminders or sensor anomalies 
+- Voice command support 
+- Improve accessibility such as options to increase colour contrast and keyboard-only navigation
+
+## Known Issues (for future developers)
+- Weather widget will not load unless the page is refreshed after login due to geolocation permissions
+- Width of todo list widget will increase when a long task is input (not exactly an issue but would be nicer if the widget size was consistent :/)
+- The popup notification triggered when a logged-out user attempts to add or delete items from the shopping list or todo list does not appear
+- Glassmorphic panel styling bleeds beyond the top and bottom edges of the widget container, affecting overall aesthetic appeal
 
 ### 🔐 Authentication Integration
 
