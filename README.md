@@ -33,7 +33,7 @@ Modern glassmorphic UI with a responsive layout. It includes a smooth sliding ca
 
 ## Testing Instructions
 To manually test key widgets:
-**Shopping List**: 
+### Shopping List: 
 - Add, delete, check off, and update the quantity of items.
 - Confirm that all changes persist after refreshing the page.
 - Enter a long item name and verify the layout remains stable (no stretching).
