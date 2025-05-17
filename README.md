@@ -4,6 +4,9 @@ This is the starter repository for the COMP2110 Portal front end assignment 2023
 expected to customise this README file to describe your own project.  You should update this
 file with some documentation on your group's implementation.
 
+## Project Overview
+This project is a modular home automation dashboard for COMP2110. It integrates various widgets that allow users to manage shopping lists, view weather data, control devices/sensors, and track tasks. Each widget communicates with a backend via APIs.
+
 ## Group Members 
 | Name | Student ID | Contribution |
 |----------|----------|----------|
@@ -11,9 +14,6 @@ file with some documentation on your group's implementation.
 |Kartik Malik|47963387|Todo list widget|
 |Anwar Charif|47667915|Device controller widget|
 |Yug Solanki|48076031|Device sensor controller widget, home overview widget|
-
-## Project Overview
-This project is a modular home automation dashboard for COMP2110. It integrates various widgets that allow users to manage shopping lists, view weather data, control devices/sensors, and track tasks. Each widget communicates with a backend via APIs.
 
 ## Features
 ### Shopping List Widget
@@ -30,6 +30,17 @@ A device-sensor-control-widget that allows users to create new smart devices or 
 A home-overview-widget that displays all smart devices and sensors grouped by location. It fetches data from the server and organises items into lists based on their assigned location. Useful for quickly visualising the state of a smart home setup in one view.
 ### UI Design + Carousel
 Modern glassmorphic UI with a responsive layout. It includes a smooth sliding carousel that allows users to navigate between different widget panels using left and right arrows.
+
+## Testing Instructions
+To manually test key widgets:
+**Shopping List**: 
+- Add, delete, check off, and update the quantity of items.
+- Confirm that all changes persist after refreshing the page.
+- Enter a long item name and verify the layout remains stable (no stretching).
+- Add four or more items and ensure a vertical scrollbar appears without altering the widget's overall size.
+
+
+
 
 ## Future Improvements (outside scope of assignment, for future developers :3)
 - Add customisation settings for user preferences for widget order and theme 
