@@ -62,6 +62,12 @@ To manually test widgets:
 - Use the left and right arrow buttons to navigate between widget pages. Confirm that panels slide smoothly with animation.
 - Confirm the carousel loops correctly (e.g., clicking right on the last panel returns to the first, and vice versa).
 
+## Known Issues (for future developers)
+- Weather widget will not load unless the page is refreshed after login due to geolocation permissions
+- Width of todo list widget will increase when a long task is input (not exactly an issue but would be nicer if the widget size was consistent :/)
+- The popup notification triggered when a logged-out user attempts to add or delete items from the shopping list or todo list does not appear
+- Glassmorphic panel styling bleeds beyond the top and bottom edges of the widget container, affecting overall aesthetic appeal
+
 ## Future Improvements (outside scope of assignment, for future developers :3)
 - Add customisation settings for user preferences for widget order and theme 
 - Combine sensor data with weather widget 
@@ -70,12 +76,7 @@ To manually test widgets:
 - Voice command support 
 - Improve accessibility such as options to increase colour contrast and keyboard-only navigation
 
-## Known Issues (for future developers)
-- Weather widget will not load unless the page is refreshed after login due to geolocation permissions
-- Width of todo list widget will increase when a long task is input (not exactly an issue but would be nicer if the widget size was consistent :/)
-- The popup notification triggered when a logged-out user attempts to add or delete items from the shopping list or todo list does not appear
-- Glassmorphic panel styling bleeds beyond the top and bottom edges of the widget container, affecting overall aesthetic appeal
-
+---
 ### 🔐 Authentication Integration
 
 ## Installation
