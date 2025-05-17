@@ -3,13 +3,14 @@ import { LitElement, html, css } from 'https://cdn.jsdelivr.net/gh/lit/dist@2/co
 import { BASE_URL } from '../config.js';
 import { getUser } from '../auth.js';
 
-// Define custom element
 export class TodoWidget extends LitElement {
-  // Declare reactive properties
+  // Declare properties
   static properties = {
-    tasks: { type: Array, state: true },  // List of tasks
-    newTask: { type: String },            // Input field for new task
-    _hasInitialLoad: { type: Boolean, state: true } // Flag to avoid reloading on multiple connections
+    tasks: { type: Array, state: true },            // List of tasks
+    newTask: { type: String },                      // Text for new task
+    _error: { type: String, state: true },          // Error message display
+    _loading: { type: Boolean, state: true },       // Loading state flag
+    _pendingSync: { type: Array, state: true }      // List of sync actions to send to server
   };
 
   // Style
@@ -153,97 +154,163 @@ export class TodoWidget extends LitElement {
     super();
     this.tasks = [];
     this.newTask = '';
-    this._hasInitialLoad = false;
+    this._error = '';
+    this._loading = false;
+    this._pendingSync = this._loadFromStorage('pendingTodoSync', []);
   }
 
   connectedCallback() {
     super.connectedCallback();
-    if (!this._hasInitialLoad) {
-      this.loadTasks();
-      this._hasInitialLoad = true;
+    this.loadTasks();
+  }
+
+  // Load & parse localStorage item
+  _loadFromStorage(key, fallback) {
+    try {
+      return JSON.parse(localStorage.getItem(key)) || fallback;
+    } catch {
+      return fallback;
     }
   }
 
-  // Load tasks from API or localStorage
+  // Save value to localStorage
+  _saveToStorage(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+  }
+
+  // Load tasks from server & localStorage + merge them
   async loadTasks() {
+    this._loading = true;
+    this._error = '';
+    let serverTasks = [];
+
     try {
       const user = getUser();
-      let loadedTasks = [];
-
       if (user?.token) {
-        const response = await fetch(`${BASE_URL}/tasks`, {
+        const res = await fetch(`${BASE_URL}/tasks?start=1&count=100`, {
           headers: { 'Authorization': `Bearer ${user.token}` }
         });
-        if (response.ok) {
-          const data = await response.json();
-          loadedTasks = Array.isArray(data.tasks) ? data.tasks : data;
+        if (res.ok) {
+          const data = await res.json();
+          serverTasks = data.tasks || [];
         }
       }
 
-      // Fallback to localStorage
-      if (!loadedTasks.length) {
-        const localData = localStorage.getItem('todoList');
-        loadedTasks = localData ? JSON.parse(localData) : [];
-      }
+      // Load tasks
+      const localTasks = this._loadFromStorage('todoList', []);
+      const deletions = new Set(this._pendingSync.filter(i => i.action === 'delete').map(i => i.id));
+      const additions = this._pendingSync.filter(i => i.action === 'add').map(i => i.task);
 
-      // Validate and set tasks
-      this.tasks = loadedTasks.filter(task =>
-        task && typeof task.title === 'string' && task.title.trim().length
-      );
-    } catch (error) {
-      console.error('Error loading tasks:', error);
+      // Filter out deleted server tasks
+      const filteredServer = serverTasks.filter(t => !deletions.has(t.id)).map(t => ({
+        id: t.id, title: t.summary, checked: false, serverData: true
+      }));
+
+      const merged = [...filteredServer, ...additions];
+      const final = [
+        ...merged,
+        ...localTasks.filter(l => !merged.some(t => t.id === l.id) && !deletions.has(l.id))
+      ];
+
+      this.tasks = final;
+      this._saveToStorage('todoList', final);
+    } catch (err) {
+      // Fallback 2 local data if server fetch fails
+      console.error(err);
+      this._error = 'Failed to load from server. Using local tasks.';
+      this.tasks = this._loadFromStorage('todoList', []);
+    } finally {
+      this._loading = false;
     }
   }
 
-  // Save tasks to API and localStorage
-  async saveTasks() {
-    try {
-      localStorage.setItem('todoList', JSON.stringify(this.tasks));
-      const user = getUser();
-      if (user?.token) {
-        await fetch(`${BASE_URL}/tasks`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${user.token}`
-          },
-          body: JSON.stringify({ tasks: this.tasks })
-        });
+  // Sync changes (add/delete) with server
+  async syncWithServer() {
+    const user = getUser();
+    if (!user?.token || !this._pendingSync.length) return;
+
+    this._loading = true;
+    const pending = [...this._pendingSync];
+
+    for (const item of pending) {
+      try {
+        if (item.action === 'add' && !item.task.id) {
+          // POST new task to server
+          const res = await fetch(`${BASE_URL}/tasks`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${user.token}`
+            },
+            body: JSON.stringify({
+              summary: item.task.title,
+              text: '',
+              priority: 1,
+              category: 'ToDo',
+              due: new Date().toISOString()
+            })
+          });
+          if (res.ok) {
+            const { id } = await res.json();
+            this.tasks = this.tasks.map(t => t === item.task ? { ...t, id, serverData: true } : t);
+            this._pendingSync = this._pendingSync.filter(i => i !== item);
+          }
+        } else if (item.action === 'delete' && item.id) {
+          // DELETE task from server
+          await fetch(`${BASE_URL}/tasks/${item.id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${user.token}` }
+          });
+          this._pendingSync = this._pendingSync.filter(i => i !== item);
+        }
+      } catch (err) {
+        console.error('Sync error:', err);
       }
-    } catch (error) {
-      console.error('Error saving tasks:', error);
     }
+
+    this._saveToStorage('pendingTodoSync', this._pendingSync);
+    this._saveToStorage('todoList', this.tasks);
+    this._loading = false;
   }
 
-  handleInput(e) {
-    this.newTask = e.target.value;
-  }
+  // Handle input box change
+  handleInput = e => this.newTask = e.target.value;
 
-  // Add a new task
+  // Add task
   async addTask(e) {
     e.preventDefault();
     const text = this.newTask.trim();
     if (!text) return;
 
-    const newTask = { title: text, checked: false };
-    this.tasks = [...this.tasks, newTask];
+    const task = { title: text, checked: false, id: null, serverData: false };
+    this.tasks = [...this.tasks, task];
+    this._pendingSync = [...this._pendingSync, { action: 'add', task }];
     this.newTask = '';
-    await this.saveTasks();
+
+    this._saveToStorage('todoList', this.tasks);
+    this._saveToStorage('pendingTodoSync', this._pendingSync);
+
+    await this.syncWithServer();  // Try syncing after adding
   }
 
-  // Delete task by index
-  async deleteTask(index, e) {
+  // Delete task
+  async deleteTask(id, index, e) {
     e.stopPropagation();
-    this.tasks = this.tasks.filter((_, i) => i !== index);
-    await this.saveTasks();
+    if (id) this._pendingSync.push({ action: 'delete', id });
+    this.tasks.splice(index, 1);
+    this.requestUpdate();
+
+    this._saveToStorage('todoList', this.tasks);
+    this._saveToStorage('pendingTodoSync', this._pendingSync);
+
+    await this.syncWithServer();
   }
 
   // Toggle task completion
-  async toggleChecked(index) {
-    this.tasks = this.tasks.map((task, i) =>
-      i === index ? { ...task, checked: !task.checked } : task
-    );
-    await this.saveTasks();
+  toggleChecked(index) {
+    this.tasks[index].checked = !this.tasks[index].checked;
+    this.requestUpdate();
+    this._saveToStorage('todoList', this.tasks);
   }
 
   render() {
@@ -255,20 +322,26 @@ export class TodoWidget extends LitElement {
           placeholder="Add task"
           .value=${this.newTask}
           @input=${this.handleInput}
+          ?disabled=${this._loading}
         />
-        <button type="submit">Add</button>
+        <button ?disabled=${this._loading}>Add</button>
       </form>
+
+      ${this._loading ? html`<div>Loading tasks...</div>` : ''}
+      ${this._error ? html`<div class="error">${this._error}</div>` : ''}
+
       <ul>
         ${this.tasks.map((task, index) => html`
           <li class=${task.checked ? 'done' : ''}>
             <div class="item-content" @click=${() => this.toggleChecked(index)}>
-              <input
-                type="checkbox"
-                .checked=${task.checked}
-              />
+              <input type="checkbox" .checked=${task.checked} ?disabled=${this._loading} />
               <span class="task-title">${task.title}</span>
             </div>
-            <button @click=${(e) => this.deleteTask(index, e)} class="btn-picto">🗑️</button>
+            <button
+              class="btn-picto"
+              @click=${e => this.deleteTask(task.id, index, e)}
+              ?disabled=${this._loading}
+            >🗑️</button>
           </li>
         `)}
       </ul>
@@ -276,5 +349,4 @@ export class TodoWidget extends LitElement {
   }
 }
 
-// Register custom element so it can be used as <todo-widget>
 customElements.define('todo-widget', TodoWidget);
