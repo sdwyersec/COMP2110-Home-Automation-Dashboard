@@ -10,7 +10,8 @@ export class TodoWidget extends LitElement {
     newTask: { type: String },                      // Text for new task
     _error: { type: String, state: true },          // Error message display
     _loading: { type: Boolean, state: true },       // Loading state flag
-    _pendingSync: { type: Array, state: true }      // List of sync actions to send to server
+    _pendingSync: { type: Array, state: true },     // List of sync actions to send to server
+    _showLoginAlert: { type: Boolean, state: true } // Show login required alert 
   };
 
   // Style
@@ -148,6 +149,20 @@ export class TodoWidget extends LitElement {
     .btn-picto:hover {
       color: red;
     }
+    
+    .login-alert {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 59, 48, 0.9);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      z-index: 1000;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      animation: fadeInOut 3s ease-in-out;
+    }
   `;
 
   constructor() {
@@ -156,161 +171,199 @@ export class TodoWidget extends LitElement {
     this.newTask = '';
     this._error = '';
     this._loading = false;
-    this._pendingSync = this._loadFromStorage('pendingTodoSync', []);
+    this._pendingSync = [];
+    this._showLoginAlert = false;
+    this._loadInitialState();
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    this.loadTasks();
-  }
-
-  // Load & parse localStorage item
-  _loadFromStorage(key, fallback) {
-    try {
-      return JSON.parse(localStorage.getItem(key)) || fallback;
-    } catch {
-      return fallback;
+   // Load tasks and pending sync actions
+  _loadInitialState() {
+    const savedTasks = localStorage.getItem('todoList');
+    const pendingSync = localStorage.getItem('pendingTodoSync');
+    
+    if (savedTasks) {
+      try {
+        this.tasks = JSON.parse(savedTasks);
+      } catch (e) {
+        console.error('Failed to parse saved tasks', e);
+      }
+    }
+    
+    if (pendingSync) {
+      try {
+        this._pendingSync = JSON.parse(pendingSync);
+      } catch (e) {
+        console.error('Failed to parse pending sync', e);
+      }
     }
   }
 
-  // Save value to localStorage
-  _saveToStorage(key, value) {
-    localStorage.setItem(key, JSON.stringify(value));
+  // Save current tasks
+  _saveState() {
+    localStorage.setItem('todoList', JSON.stringify(this.tasks));
+    localStorage.setItem('pendingTodoSync', JSON.stringify(this._pendingSync));
+  }
+
+  // Show alert when user not logged in 
+  _showLoginMessage() {
+    this._showLoginAlert = true;
+    console.log("showLoginMessage triggered");
+    setTimeout(() => {
+      this._showLoginAlert = false;
+      this.requestUpdate('_showLoginAlert');
+    }, 3000);
   }
 
   // Load tasks from server & localStorage + merge them
   async loadTasks() {
     this._loading = true;
-    this._error = '';
-    let serverTasks = [];
-
     try {
       const user = getUser();
       if (user?.token) {
-        const res = await fetch(`${BASE_URL}/tasks?start=1&count=100`, {
+        const response = await fetch(`${BASE_URL}/tasks?start=1&count=100`, {
           headers: { 'Authorization': `Bearer ${user.token}` }
         });
-        if (res.ok) {
-          const data = await res.json();
-          serverTasks = data.tasks || [];
+        
+        if (response.ok) {
+          const data = await response.json();
+          const serverTasks = data.tasks || [];
+          
+          // Preserve checked state
+          const localTasks = this.tasks.filter(t => !t.serverData);
+          this.tasks = [
+            ...serverTasks.map(st => {
+              const existing = this.tasks.find(t => t.id === st.id);
+              return {
+                id: st.id,
+                title: st.summary,
+                checked: existing ? existing.checked : false,
+                serverData: true
+              };
+            }),
+            ...localTasks
+          ];
         }
       }
-
-      // Load tasks
-      const localTasks = this._loadFromStorage('todoList', []);
-      const deletions = new Set(this._pendingSync.filter(i => i.action === 'delete').map(i => i.id));
-      const additions = this._pendingSync.filter(i => i.action === 'add').map(i => i.task);
-
-      // Filter out deleted server tasks
-      const filteredServer = serverTasks.filter(t => !deletions.has(t.id)).map(t => ({
-        id: t.id, title: t.summary, checked: false, serverData: true
-      }));
-
-      const merged = [...filteredServer, ...additions];
-      const final = [
-        ...merged,
-        ...localTasks.filter(l => !merged.some(t => t.id === l.id) && !deletions.has(l.id))
-      ];
-
-      this.tasks = final;
-      this._saveToStorage('todoList', final);
-    } catch (err) {
-      // Fallback 2 local data if server fetch fails
-      console.error(err);
-      this._error = 'Failed to load from server. Using local tasks.';
-      this.tasks = this._loadFromStorage('todoList', []);
+    } catch (error) {
+      console.error('Failed to load tasks:', error);
+      this._error = 'Failed to sync with server. Using local tasks.';
     } finally {
       this._loading = false;
+      this._saveState();
     }
   }
 
   // Sync changes (add/delete) with server
   async syncWithServer() {
     const user = getUser();
-    if (!user?.token || !this._pendingSync.length) return;
+    if (!user?.token) return;
 
     this._loading = true;
-    const pending = [...this._pendingSync];
-
-    for (const item of pending) {
-      try {
-        if (item.action === 'add' && !item.task.id) {
-          // POST new task to server
-          const res = await fetch(`${BASE_URL}/tasks`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${user.token}`
-            },
-            body: JSON.stringify({
-              summary: item.task.title,
-              text: '',
-              priority: 1,
-              category: 'ToDo',
-              due: new Date().toISOString()
-            })
-          });
-          if (res.ok) {
-            const { id } = await res.json();
-            this.tasks = this.tasks.map(t => t === item.task ? { ...t, id, serverData: true } : t);
-            this._pendingSync = this._pendingSync.filter(i => i !== item);
-          }
-        } else if (item.action === 'delete' && item.id) {
-          // DELETE task from server
-          await fetch(`${BASE_URL}/tasks/${item.id}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${user.token}` }
-          });
+    try {
+      const additions = this._pendingSync.filter(item => item.action === 'add');
+      for (const item of additions) {
+        // POST new task to server
+        const response = await fetch(`${BASE_URL}/tasks`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${user.token}`
+          },
+          body: JSON.stringify({
+            summary: item.task.title,
+            text: '',
+            priority: 1,
+            category: 'ToDo',
+            due: new Date().toISOString()
+          })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          this.tasks = this.tasks.map(t => 
+            t === item.task ? { ...t, id: data.id, serverData: true } : t
+          );
           this._pendingSync = this._pendingSync.filter(i => i !== item);
         }
-      } catch (err) {
-        console.error('Sync error:', err);
       }
-    }
 
-    this._saveToStorage('pendingTodoSync', this._pendingSync);
-    this._saveToStorage('todoList', this.tasks);
-    this._loading = false;
+      const deletions = this._pendingSync.filter(item => item.action === 'delete');
+      for (const item of deletions) {
+        // DELETE task from server
+        await fetch(`${BASE_URL}/tasks/${item.id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${user.token}` }
+        });
+        this._pendingSync = this._pendingSync.filter(i => i !== item);
+      }
+    } catch (error) {
+      console.error('Sync error:', error);
+    } finally {
+      this._loading = false;
+      this._saveState();
+    }
   }
 
   // Handle input box change
-  handleInput = e => this.newTask = e.target.value;
+  handleInput(e) {
+    this.newTask = e.target.value;
+  }
 
   // Add task
   async addTask(e) {
     e.preventDefault();
+    const user = getUser();
+    if (!user?.token) {
+      this._showLoginMessage();
+      return;
+    }
+
     const text = this.newTask.trim();
     if (!text) return;
 
-    const task = { title: text, checked: false, id: null, serverData: false };
-    this.tasks = [...this.tasks, task];
-    this._pendingSync = [...this._pendingSync, { action: 'add', task }];
+    const newTask = { 
+      title: text,
+      checked: false,
+      id: null,
+      serverData: false
+    };
+    
+    this.tasks = [...this.tasks, newTask];
+    this._pendingSync = [...this._pendingSync, { action: 'add', task: newTask }];
     this.newTask = '';
-
-    this._saveToStorage('todoList', this.tasks);
-    this._saveToStorage('pendingTodoSync', this._pendingSync);
-
+    
+    this._saveState();
     await this.syncWithServer();  // Try syncing after adding
   }
 
   // Delete task
-  async deleteTask(id, index, e) {
+  async deleteTask(taskId, index, e) {
     e.stopPropagation();
-    if (id) this._pendingSync.push({ action: 'delete', id });
-    this.tasks.splice(index, 1);
-    this.requestUpdate();
+    const user = getUser();
+    if (!user?.token) {
+      this._showLoginMessage();
+      return;
+    }
 
-    this._saveToStorage('todoList', this.tasks);
-    this._saveToStorage('pendingTodoSync', this._pendingSync);
-
+    this.tasks = this.tasks.filter((_, i) => i !== index);
+    if (taskId) {
+      this._pendingSync = [...this._pendingSync, { action: 'delete', id: taskId }];
+    }
+    
+    this._saveState();
     await this.syncWithServer();
   }
 
   // Toggle task completion
   toggleChecked(index) {
     this.tasks[index].checked = !this.tasks[index].checked;
+    this._saveState();
     this.requestUpdate();
-    this._saveToStorage('todoList', this.tasks);
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    this.loadTasks();
   }
 
   render() {
@@ -324,22 +377,27 @@ export class TodoWidget extends LitElement {
           @input=${this.handleInput}
           ?disabled=${this._loading}
         />
-        <button ?disabled=${this._loading}>Add</button>
+        <button type="submit" ?disabled=${this._loading}>Add</button>
       </form>
 
       ${this._loading ? html`<div>Loading tasks...</div>` : ''}
       ${this._error ? html`<div class="error">${this._error}</div>` : ''}
+      ${this._showLoginAlert ? html`<div class="login-alert">Please login to modify tasks</div>` : ''}
 
       <ul>
         ${this.tasks.map((task, index) => html`
           <li class=${task.checked ? 'done' : ''}>
             <div class="item-content" @click=${() => this.toggleChecked(index)}>
-              <input type="checkbox" .checked=${task.checked} ?disabled=${this._loading} />
+              <input
+                type="checkbox"
+                .checked=${task.checked}
+                ?disabled=${this._loading}
+              />
               <span class="task-title">${task.title}</span>
             </div>
-            <button
+            <button 
+              @click=${(e) => this.deleteTask(task.id, index, e)} 
               class="btn-picto"
-              @click=${e => this.deleteTask(task.id, index, e)}
               ?disabled=${this._loading}
             >🗑️</button>
           </li>
