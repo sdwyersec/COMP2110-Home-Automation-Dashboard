@@ -1,3 +1,4 @@
+  // Imports
   import { LitElement, html, css } from 'https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js';
   import './components/widget-block.js';
   import './components/widget-column.js';
@@ -10,6 +11,7 @@
   import './components/todo-widget.js';
   import './components/weather-widget.js';
 
+  // Define main dashboard components 
   class Comp2110Dashboard extends LitElement {
     static properties = {
       header: { type: String },
@@ -17,6 +19,7 @@
       totalSlides: { type: Number },
     };
 
+    // Styling
     static styles = css`
       @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap');
 
@@ -153,8 +156,8 @@
     constructor() {
       super();
       this.header = 'COMP2110 Home Automation';
-      this.currentSlide = 1; 
-      this.totalSlides = 3; 
+      this.currentSlide = 1;  // Starting at slide 1
+      this.totalSlides = 3;   // Total real slides
     }
 
     firstUpdated() {
@@ -162,16 +165,19 @@
       this.updateSlidePosition();
     }
 
+    // Moves slides container to correct slide
     updateSlidePosition() {
       this.slidesContainer.style.transform = `translateX(-${this.currentSlide * 100}%)`;
     }
 
+    // Advances carousel to next slide, handles looping
     nextSlide() {
       if (this.currentSlide <= this.totalSlides) {
         this.currentSlide++;
         this.updateSlidePosition();
       }
 
+      // Loop to beginning
       if (this.currentSlide === this.totalSlides + 1) {
         setTimeout(() => {
           this.slidesContainer.style.transition = 'none';
@@ -183,12 +189,14 @@
       }
     }
 
+    // Moves to previous slide, handles looping
     prevSlide() {
       if (this.currentSlide > 0) {
         this.currentSlide--;
         this.updateSlidePosition();
       }
 
+      // Loop to end if goes b4 slide 1
       if (this.currentSlide === 0) {
         setTimeout(() => {
           this.slidesContainer.style.transition = 'none';
@@ -200,6 +208,7 @@
       }
     }
 
+    // Render dashboard
     render() {
       return html`
         <div class="content-wrapper">
@@ -270,12 +279,14 @@
               </div>
             </div>
 
+            <!-- Nav buttons for carousel -->
             <div class="carousel-nav">
               <button class="carousel-btn" @click=${this.prevSlide}>←</button>
               <button class="carousel-btn" @click=${this.nextSlide}>→</button>
             </div>
           </div>
 
+          <!-- Footer text -->
           <p class="app-footer">
             A product of the COMP2110 Web Development Collective &copy; 2025
           </p>
