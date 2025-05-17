@@ -31,16 +31,36 @@ A home-overview-widget that displays all smart devices and sensors grouped by lo
 ### UI Design + Carousel
 Modern glassmorphic UI with a responsive layout. It includes a smooth sliding carousel that allows users to navigate between different widget panels using left and right arrows.
 
-## Testing Instructions
-To manually test key widgets:
-### Shopping List: 
+## Testing Instructions (for future developers)
+To manually test widgets:
+### Shopping List Widget: 
 - Add, delete, check off, and update the quantity of items.
 - Confirm that all changes persist after refreshing the page.
 - Enter a long item name and verify the layout remains stable (no stretching).
 - Add four or more items and ensure a vertical scrollbar appears without altering the widget's overall size.
+- Attempt to add or delete items while logged out. Confirm that this is not possible. 
 
+### Weather Widget:
+- Ensure location access is enabled in your browser.
+- Upon loading the page, verify that the widget displays:
+  - Location coordinates  
+  - Current temperature  
+  - Wind speed
+- Reload the page and confirm the weather data loads consistently.
 
+### Todo List Widget:
+- Add, delete, check off, and update tasks.
+- Confirm that all changes persist after refreshing the page.
+- Add five or more tasks and ensure a vertical scrollbar appears without altering the widget's overall size.
+- Attempt to add or delete tasks while logged out. Confirm that this is not possible. 
 
+### Device Controller Widget:
+
+### Home Overview Widget:
+
+### Carousel:
+- Use the left and right arrow buttons to navigate between widget pages. Confirm that panels slide smoothly with animation.
+- Confirm the carousel loops correctly (e.g., clicking right on the last panel returns to the first, and vice versa).
 
 ## Future Improvements (outside scope of assignment, for future developers :3)
 - Add customisation settings for user preferences for widget order and theme 
