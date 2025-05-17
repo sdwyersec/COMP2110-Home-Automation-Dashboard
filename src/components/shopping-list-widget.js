@@ -9,10 +9,11 @@ export class ShoppingListWidget extends LitElement {
   static properties = {
     items: { type: Array, state: true },  // List of shopping items
     newItem: { type: String },  // Input field for new item
-    _hasInitialLoad: { type: Boolean, state: true } // Flag to avoid reloading on multiple connections
+    _hasInitialLoad: { type: Boolean, state: true },  // Flag to avoid reloading on multiple connections
+    _showLoginAlert: { type: Boolean, state: true } 
   };
 
-  // Style
+   // Style
   static styles = css`
     :host {
       display: block;
@@ -158,22 +159,45 @@ export class ShoppingListWidget extends LitElement {
       text-align: center;
       margin: 1rem 0;
     }
+    
+    .login-alert {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 59, 48, 0.9);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      z-index: 1000;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+
+    .login-alert.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
   `;
 
   // Initialise properties
   constructor() {
     super();
     this.items = [];  // Start with empty list
-    this.newItem = '';   // Start with empty input field
+    this.newItem = '';  // Start with empty input field
     this._hasInitialLoad = false;
+    this._showLoginAlert = false;
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    if (!this._hasInitialLoad) {
-      this.loadItems();
-      this._hasInitialLoad = true;
-    }
+  _showLoginMessage() {
+    this._showLoginAlert = true;
+    this.requestUpdate();
+    
+    setTimeout(() => {
+      this._showLoginAlert = false;
+      this.requestUpdate();
+    }, 3000);
   }
 
   // Load items from API
@@ -202,11 +226,9 @@ export class ShoppingListWidget extends LitElement {
         loadedItems = localItems ? JSON.parse(localItems) : [];
       }
 
-      // Validate item & filter out invalid ones
+      // Validate items & filter out invalid ones
       const validItems = loadedItems.filter(item =>
-        item &&
-        typeof item.name === 'string' &&
-        item.name.trim().length > 0
+        item && typeof item.name === 'string' && item.name.trim().length > 0
       );
 
       this.items = validItems;
@@ -244,6 +266,12 @@ export class ShoppingListWidget extends LitElement {
   // Add a new item
   async addItem(e) {
     e.preventDefault();
+    const user = getUser();
+    if (!user?.token) {
+      this._showLoginMessage();
+      return;
+    }
+
     const text = this.newItem.trim();
     if (!text) return;
 
@@ -256,6 +284,12 @@ export class ShoppingListWidget extends LitElement {
   // Delete item by index
   async deleteItem(index, e) {
     e.stopPropagation();
+    const user = getUser();
+    if (!user?.token) {
+      this._showLoginMessage();
+      return;
+    }
+
     this.items = this.items.filter((_, i) => i !== index);
     await this.saveItems();
   }
@@ -288,6 +322,14 @@ export class ShoppingListWidget extends LitElement {
     await this.saveItems();
   }
 
+  connectedCallback() {
+    super.connectedCallback();
+    if (!this._hasInitialLoad) {
+      this.loadItems();
+      this._hasInitialLoad = true;
+    }
+  }
+
   // HTML structure for widget
   render() {
     return html`
@@ -304,6 +346,11 @@ export class ShoppingListWidget extends LitElement {
         <button type="submit">Add</button>
       </form>
 
+      ${this._showLoginAlert ? html`
+        <div class="login-alert">
+          Please login to modify shopping list
+        </div>
+      ` : ''}
 
       <!-- Render the list of items -->
       <ul>
