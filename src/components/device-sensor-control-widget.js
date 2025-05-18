@@ -19,16 +19,19 @@ export class DeviceSensorControlWidget extends LitElement {
       max-width: 500px;
       backdrop-filter: blur(5px);
     }
+
     h3 {
       text-align: center;
       margin-bottom: 1rem;
       font-size: 25px;
     }
+
     form {
       display: flex;
       flex-direction: column;
       gap: 0.75rem;
     }
+
     input, select {
       padding: 0.75rem;
       border: none;
@@ -38,9 +41,11 @@ export class DeviceSensorControlWidget extends LitElement {
       color: white;
       backdrop-filter: blur(5px);
     }
+
     input::placeholder {
       color: #ccc;
     }
+
     select {
       appearance: none;
       background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
@@ -48,6 +53,7 @@ export class DeviceSensorControlWidget extends LitElement {
       background-position: right 0.75rem center;
       background-size: 1rem;
     }
+
     button {
       background-color: rgb(60, 61, 105);
       color: white;
@@ -59,15 +65,18 @@ export class DeviceSensorControlWidget extends LitElement {
       transition: background-color 0.2s ease;
       margin-top: 0.5rem;
     }
+
     button:hover {
       background-color: #52537e;
     }
+
     .error {
       color: #ff6b6b;
       text-align: center;
       margin: 0.5rem 0;
       font-size: 0.9rem;
     }
+      
     .debug-info {
       font-size: 0.8rem;
       color: #aaa;
