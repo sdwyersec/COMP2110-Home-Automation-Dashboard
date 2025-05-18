@@ -61,7 +61,7 @@ To manually test widgets:
 - Switch to original widget and toggle off if originally on or vice versa
 
 ### Device Sensor Control Widget:
-- Fill in all required fields (Label, Type, Location) and submit the form. Verify that the device or sensor is created and visible within the Home overview widget.
+- Fill in all required fields (Label, Type, Location) and submit the form. Verify that the device or sensor is created and visible within the Home overview widget after reloading the page.
 - Leave one or more required fields empty and attempt to submit. Confirm that an error message appears and submission is blocked.
 - Ensure the Location dropdown is correctly populated with options retrieved from the server.
 - After successful submission, check that the form fields reset to their default state.
