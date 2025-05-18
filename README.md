@@ -25,7 +25,7 @@ A todo-widget that allows users to manage a personal to-do list with real-time s
 ### Device Controller Widget
 A device-controller that displays the current status of a specific smart device and allows the user to toggle it on or off. It fetches device data from the server using the device ID and updates the status with an API call. The user must be logged in to interact with the device. Features a drop down menu which allows the user to select which widget they want to control.
 ### Device Sensor Control Widget 
-A device-sensor-control-widget that allows users to create new smart devices or sensors by submitting a form. It supports both device and sensor creation with customisable labels, types, and location IDs. The form sends data to the backend using an API call. Displays success or error messages based on server response. Requires valid login token to function properly.
+A device-sensor-control-widget that allows users to create new devices or sensors by submitting a form. It supports both device and sensor creation with customisable labels, types, and locations. It fetches available locations from the backend and sends the form data to either the /home/devices or /home/sensors API endpoint using a bearer token stored in localStorage. Requires valid login token to function properly.
 ### Home Overview Widget
 A home-overview-widget that displays all smart devices and sensors grouped by location. It fetches data from the server and organises items into lists based on their assigned location. Useful for quickly visualising the state of a smart home setup in one view.
 ### UI Design + Carousel
@@ -60,7 +60,17 @@ To manually test widgets:
 - Change widget from dropdown, return to original toggled widget to check if turn(on/off) still present
 - Switch to original widget and toggle off if originally on or vice versa
 
+### Device Sensor Control Widget:
+- Fill in all required fields (Label, Type, Location) and submit the form. Verify that the device or sensor is created and visible within the Home overview widget.
+- Leave one or more required fields empty and attempt to submit. Confirm that an error message appears and submission is blocked.
+- Ensure the Location dropdown is correctly populated with options retrieved from the server.
+- After successful submission, check that the form fields reset to their default state.
+
 ### Home Overview Widget:
+- Load the dashboard while logged in and confirm that devices and sensors are displayed correctly, grouped by location.
+- Log out and reload the page. Confirm that a login alert is shown and no devices or sensors are loaded.
+- Click the "Delete" button on a device or sensor and verify that it disappears from the list and remains hidden after a page refresh.
+- Click an item's label to ensure an alert pops up displaying its label, type, and location.
 
 ### Carousel:
 - Use the left and right arrow buttons to navigate between widget pages. Confirm that panels slide smoothly with animation.
@@ -71,6 +81,7 @@ To manually test widgets:
 - Width of todo list widget will increase when a long task is input (not exactly an issue but would be nicer if the widget size was consistent :/)
 - The popup notification triggered when a logged-out user attempts to add or delete items from the shopping list or todo list does not appear
 - Glassmorphic panel styling bleeds beyond the top and bottom edges of the widget container, affecting overall aesthetic appeal
+- Delete functionality in Home Overview only hides items locally (client-side) rather than removing them from the server, causing deleted items to reappear when logging in from different devices (hence the 'strange' devices) 
 
 ## Future Improvements (outside scope of assignment, for future developers :3)
 - Add customisation settings for user preferences for widget order and theme 
