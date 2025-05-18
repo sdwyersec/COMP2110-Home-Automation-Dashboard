@@ -55,6 +55,10 @@ To manually test widgets:
 - Attempt to add or delete tasks while logged out. Confirm that this is not possible. 
 
 ### Device Controller Widget:
+- Select desired device to control
+- Toggle device on if already off or vice versa
+- Change widget from dropdown, return to original toggled widget to check if turn(on/off) still present
+- Switch to original widget and toggle off if originally on or vice versa
 
 ### Home Overview Widget:
 
