@@ -23,7 +23,7 @@ A weather-widget that displays real-time weather data based on the user's geoloc
 ### Todo List Widget
 A todo-widget that allows users to manage a personal to-do list with real-time sync to a backend server. Tasks are saved locally using localStorage and synced with the server when the user is logged in. Users can add, check off, or delete tasks while logged out. The widget loads any stored tasks and handles offline syncing through a queue of pending actions.
 ### Device Controller Widget
-A device-controller that displays the current status of a specific smart device and allows the user to toggle it on or off. It fetches device data from the server using the device ID and updates the status with an API call. The user must be logged in to interact with the device.
+A device-controller that displays the current status of a specific smart device and allows the user to toggle it on or off. It fetches device data from the server using the device ID and updates the status with an API call. The user must be logged in to interact with the device. Features a drop down menu which allows the user to select which widget they want to control.
 ### Device Sensor Control Widget 
 A device-sensor-control-widget that allows users to create new smart devices or sensors by submitting a form. It supports both device and sensor creation with customisable labels, types, and location IDs. The form sends data to the backend using an API call. Displays success or error messages based on server response. Requires valid login token to function properly.
 ### Home Overview Widget
@@ -55,6 +55,10 @@ To manually test widgets:
 - Attempt to add or delete tasks while logged out. Confirm that this is not possible. 
 
 ### Device Controller Widget:
+- Select desired device to control
+- Toggle device on if already off or vice versa
+- Change widget from dropdown, return to original toggled widget to check if turn(on/off) still present
+- Switch to original widget and toggle off if originally on or vice versa
 
 ### Home Overview Widget:
 
