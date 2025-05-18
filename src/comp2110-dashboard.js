@@ -288,7 +288,7 @@
 
           <!-- Footer text -->
           <p class="app-footer">
-            A product of the COMP2110 Web Development Collective &copy; 2025
+            A Product of the COMP2110 Web Development Collective &copy; 2025
           </p>
         </div>
       `;
