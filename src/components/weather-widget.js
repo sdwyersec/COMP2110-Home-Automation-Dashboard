@@ -135,7 +135,7 @@ export class WeatherWidget extends LitElement {
           this.temperature = data.current.temperature_2m;
           this.windSpeed = data.current.wind_speed_10m;
           // Format location
-          this.location = `Lat: ${latitude.toFixed(2)}, Lon: ${longitude.toFixed(2)}`;
+          this.location = `Lat: ${latitude.toFixed(2)}, Long: ${longitude.toFixed(2)}`;
           this.error = ''; 
           this.lastUpdated = new Date().toLocaleTimeString();  // Set update time
         } catch (err) {
