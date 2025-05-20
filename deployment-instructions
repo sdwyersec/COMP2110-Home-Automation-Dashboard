@@ -1,0 +1,38 @@
+## Updating the Deployed Application
+This project is deployed using **Cloudflare Pages**. Updates can be pushed by following the steps below.
+
+### Live Site Link
+You can view the deployed application here:  
+**https://comp2110-group105-8rj.pages.dev/**
+
+### How to Update the Deployed Site
+After making any changes to the project code (e.g editing HTML, CSS, JavaScript, or adding/removing files), follow these steps to publish the updated version:
+#### 1. Ensure Dependencies are Installed
+
+If you're working on a fresh machine or after cloning the repo, install project dependencies:
+```bash  
+npm install
+```
+
+#### 2. Authenticate with Cloudflare (only once per machine)
+If not already done:
+```bash
+npx wrangler login
+```
+This opens your browser to authenticate your Cloudflare account.
+
+#### 3. Publish the Updated Version
+Run this from the root of your project directory:
+```bash
+npx wrangler pages publish .
+```
+Don’t forget the . — it tells Wrangler to publish the current directory.
+
+#### 4. Wait for Deployment
+It may take a few seconds to a minute for Cloudflare to process the update. Once finished, the updated site will be live at the same URL.
+
+### Notes for Future Developers 
+- All updates must be re-published manually using the npx wrangler pages publish . command.
+- Keep dependencies up to date with npm install.
+- Cloudflare Pages automatically replaces the old version with your updated code.
+
